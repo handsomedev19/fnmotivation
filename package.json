@@ -1,0 +1,79 @@
+{
+  "name": "react-redux-starter-kit",
+  "homepage": "https://cloudmu.github.com/react-redux-starter-kit",
+  "version": "1.0.0",
+  "description": "React/Redux Starter Kit with Zero Build Configuration",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudmu/react-redux-starter-kit.git"
+  },
+  "keywords": [
+    "react",
+    "reactjs",
+    "redux",
+    "react-router",
+    "bootstrap",
+    "webpack",
+    "jwt",
+    "auth0",
+    "dashboard",
+    "template",
+    "boilerplate",
+    "create-react-app",
+    "websockets",
+    "socket.io",
+    "PWA",
+    "Progressive Web Apps"
+  ],
+  "author": "twitter.com/_cloudmu (http://github.com/cloudmu)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cloudmu/react-redux-starter-kit/issues"
+  },
+  "proxy": "http://localhost:3001",
+  "devDependencies": {
+    "react-scripts": "3.4.3",
+    "node-sass": "^4.14.1"
+  },
+  "dependencies": {
+    "axios": "^0.21.0",
+    "bootstrap": "^4.5.3",
+    "classnames": "^2.2.5",
+    "font-awesome": "^4.7.0",
+    "isomorphic-fetch": "^2.2.1",
+    "jquery": "^3.2.1",
+    "jwt-decode": "^2.2.0",
+    "lodash": "^4.17.4",
+    "peer": "^0.5.3",
+    "popper.js": "^1.12.6",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-bootstrap": "^1.4.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "^5.0.6",
+    "react-router-dom": "^4.2.2",
+    "react-virtualized": "^9.12.0",
+    "redux": "^3.7.2",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.2.0",
+    "socket.io-client": "^2.0.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
