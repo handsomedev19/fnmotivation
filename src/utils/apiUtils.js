@@ -81,7 +81,8 @@ export function callApi(
 
 export const ID_TOKEN = "id_token";
 export const ID_USER = "id_user";
-export const SERVER_URL = "http://localhost:1337";
+//export const SERVER_URL = "http://localhost:1337";
+export const SERVER_URL = "http://fnmotivation.com:1337";
 
 export function setIdToken(idToken) {
   localStorage.setItem(ID_TOKEN, idToken);

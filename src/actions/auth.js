@@ -64,7 +64,7 @@ export function login(user, password) {
   };
 
   return callApi(
-    "http://localhost:1337/auth/local",
+    SERVER_URL + "/auth/local",
     config,
     loginRequest(user),
     loginSuccess,
