@@ -16,3 +16,6 @@ npm-debug.log
 typings.json
 jsconfig.json
 
+# env file
+.env
+

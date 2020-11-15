@@ -5,6 +5,7 @@ import auth from "../reducers/auth";
 import alerts from "../reducers/alerts";
 import { selectedUsersPage, usersByPage } from "../reducers/users";
 import { selectedReposPage, reposByPage } from "../reducers/repos";
+import articles from "../reducers/articles";
 
 const logger = createLogger();
 const rootReducer = combineReducers({
@@ -13,7 +14,8 @@ const rootReducer = combineReducers({
   selectedUsersPage,
   usersByPage,
   selectedReposPage,
-  reposByPage
+  reposByPage,
+  articles
 });
 
 const initialState = {};
