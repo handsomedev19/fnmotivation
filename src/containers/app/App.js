@@ -49,16 +49,16 @@ class App extends Component {
             <div className="appContent">
               <Switch>
                 <Route exact path="/" component={HomeContainer} />
-                <Route path="/about" component={CommunitiesContainer} />
+                <Route path="/communities" component={CommunitiesContainer} />
                 <Route path="/login" component={Login} />
                 <Route path="/signup" component={SignupContainer} />
                 <PrivateRoute
-                  path="/users"
+                  path="/post-story"
                   isAuthenticated={isAuthenticated}
                   component={PostStoryContainer}
                 />
                 <PrivateRoute
-                  path="/repos"
+                  path="/post-new-article"
                   isAuthenticated={isAuthenticated}
                   component={PostNewArticleContainer}
                 />

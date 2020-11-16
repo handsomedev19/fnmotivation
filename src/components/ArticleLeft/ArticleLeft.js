@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Row, Col, Nav, Tab, Modal} from 'react-bootstrap'  
 import artImg1 from '../../images/drug-addiction-img.png'
 import artImg2 from '../../images/alcohol-addiction-img.png'
@@ -9,6 +9,7 @@ import DialImgCheck from '../../images/check-icon.svg'
 import { connect } from 'react-redux'
 import PropTypes from "prop-types";
 import { getCategories } from "../../actions/articles";
+import { getArticles } from "../../actions/articles";
 
 
 function CategoryModal(props) {
@@ -111,7 +112,8 @@ class ArticleLeft extends React.Component {
     }
 
   componentWillMount() {
-    this.props.dispatch(getCategories());      
+    this.props.dispatch(getCategories());
+    this.props.dispatch(getArticles());    
   }
 
   
@@ -124,7 +126,7 @@ class ArticleLeft extends React.Component {
         <div>
             <div className="article-left">
                 <div className="pre-login-inner">
-                    <div >
+                    <div>
                         <Tab.Container defaultActiveKey="recent">      
                             <div>
                                 <div className="pre-login-sort">
@@ -137,12 +139,12 @@ class ArticleLeft extends React.Component {
                                         </Nav.Item>
                                     </Nav>
                                     <select className="form-control">
-                                        {/*<option>Select Community</option>*/}
+                                        <option value="0">Select Community</option>
                                         { this.props.categories && this.props.categories.map(function(category) {
                                             return (
                                             <option value={category.id}>{category.title}</option>
                                             );
-                                        })  }
+                                        }) }
                                     </select>
                                 </div>
                                 <div>
@@ -413,7 +415,11 @@ ArticleLeft.propTypes = {
 
 function mapStateToProps(state){
     const { categories } = state.articles;
+    const { articles } = state.articles;
 
-    return { categories: categories };
+    return { 
+        categories: categories,
+        articles: articles
+    };
 }
 export default connect(mapStateToProps)(ArticleLeft)

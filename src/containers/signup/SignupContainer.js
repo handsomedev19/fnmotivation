@@ -78,33 +78,33 @@ class SignupContainer extends React.Component {
 
     handleSignup(event) {
         event.preventDefault();
-        console.log(this.state.tempUser.userName);
-        console.log(this.state.tempUser.email);
-        console.log(this.state.tempUser.password);
+        console.log(this.state.tempUser.tempUserName);
+        console.log(this.state.tempUser.tempEmail);
+        console.log(this.state.tempUser.tempPassword);
         console.log(this.state.tempGender);
 
         this.setState({ tempSubmitted: true });
         const { tempUser } = this.state;
 
         const config = {
-            username: tempUser.userName,
-            fullname: tempUser.fullName,
-            email: tempUser.email,
+            username: tempUser.tempUserName,
+            fullname: tempUser.tempFullName,
+            email: tempUser.tempEmail,
             gender: this.state.tempGender,
-            birthday: tempUser.birthday,
-            password: tempUser.password,
+            birthday: tempUser.tempBirthday,
+            password: tempUser.tempPassword,
         };
 
-        if (tempUser.password === tempUser.confirmPassword) {
+        if (tempUser.tempPassword === tempUser.tempConfirmPassword) {
             this.setState({tempIsMatched: 'true'});
-            if (this.state.tempCheckValue === 'true' && tempUser.userName && tempUser.email && tempUser.password){
+            if (this.state.tempCheckValue === 'true' && tempUser.tempUserName && tempUser.tempEmail && tempUser.tempPassword){
 
                 this.props.dispatch(signup(config.username, config.fullname, config.email, config.gender, config.birthday, config.password));
               
                 this.setState({ tempSubmitted: false });
-                this.setState({tempUser : {tempUserName: '', tempFullName: '', tempeEmail: '', tempPassword: '', tempBirthday: '', tempConfirmPassword: ''}});
+                //this.setState({tempUser : {tempUserName: '', tempFullName: '', tempEmail: '', tempPassword: '', tempBirthday: '', tempConfirmPassword: ''}});
                 this.setState({tempIsMatched: 'false'});
-                this.setState({tempCheckValue: 'false'});
+                //this.setState({tempCheckValue: 'false'});
             }
         } else {
             this.setState({tempIsMatched: 'false'});
@@ -143,20 +143,20 @@ class SignupContainer extends React.Component {
                                       </div>
                                       <div className="form-group">
                                           <label>Username</label>
-                                          <input type="text" className="form-control" placeholder="Username" name="userName" value={tempUser.userName} onChange={this.handleChange}/>
-                                          {tempSubmitted && !tempUser.userName && <div className="help-block">Username is required</div> }
+                                          <input type="text" className="form-control" placeholder="Username" name="tempUserName" value={tempUser.tempUserName} onChange={this.handleChange}/>
+                                          {tempSubmitted && !tempUser.tempUserName && <div className="help-block">Username is required</div> }
                                           <p className="user-text">Username may contain only letters, numbers, and @/./+/-/_ characters. Username cannot contain spaces.</p>
                                           
                                       </div>
                                       <div className="form-group ">
                                           <label>Fullname</label>
-                                          <input type="text" className="form-control" placeholder="" name="fullName" value={tempUser.fullName} onChange={this.handleChange}/>
-                                          {tempSubmitted && !tempUser.fullName && <div className="help-block">Fullname is required</div> } 
+                                          <input type="text" className="form-control" placeholder="" name="tempFullName" value={tempUser.tempFullName} onChange={this.handleChange}/>
+                                          {tempSubmitted && !tempUser.tempFullName && <div className="help-block">Fullname is required</div> } 
                                       </div>
                                       <div className="form-group ">
                                           <label>Email</label>
-                                          <input type="text" className="form-control" placeholder="" name="email" value={tempUser.email} onChange={this.handleChange}/>
-                                          {tempSubmitted && !tempUser.email && <div className="help-block">Email is required</div> } 
+                                          <input type="text" className="form-control" placeholder="" name="tempEmail" value={tempUser.tempEmail} onChange={this.handleChange}/>
+                                          {tempSubmitted && !tempUser.tempEmail && <div className="help-block">Email is required</div> } 
                                       </div>
                                       <div className="form-group" >
                                           <label>Gender</label>
@@ -186,19 +186,19 @@ class SignupContainer extends React.Component {
                                       </div>
                                       <div className="form-group ">
                                           <label>Date of Birth</label>
-                                          <input type="text" className="form-control" placeholder="mm/dd/yyyy" name="birthday" value={tempUser.birthday} onChange={this.handleChange}/>
-                                          {tempSubmitted && !tempUser.birthday && <div className="help-block">Birthday is required</div> }
+                                          <input type="text" className="form-control" placeholder="mm/dd/yyyy" name="tempBirthday" value={tempUser.tempBirthday} onChange={this.handleChange}/>
+                                          {tempSubmitted && !tempUser.tempBirthday && <div className="help-block">Birthday is required</div> }
                                       </div>
                                       <div className="form-group ">
                                           <label>Password</label>
-                                          <input type="password" className="form-control" placeholder="" name="password" value={tempUser.password} onChange={this.handleChange}/>
-                                          {tempSubmitted && !tempUser.password && <div className="help-block">Password is required</div> } 
+                                          <input type="password" className="form-control" placeholder="" name="tempPassword" value={tempUser.tempPassword} onChange={this.handleChange}/>
+                                          {tempSubmitted && !tempUser.tempPassword && <div className="help-block">Password is required</div> } 
                                           <p className="password-must">Your password must contain at least 8 characters.</p>
                                       </div>
                                       <div className="form-group ">
                                           <label>Confirm Password</label>
-                                          <input type="password" className="form-control" placeholder="" name="confirmPassword" value={tempUser.confirmPassword} onChange={this.handleChange}/>
-                                          {tempSubmitted && !tempUser.confirmPassword && <div className="help-block">Confirmpassword is required</div> }
+                                          <input type="password" className="form-control" placeholder="" name="tempConfirmPassword" value={tempUser.tempConfirmPassword} onChange={this.handleChange}/>
+                                          {tempSubmitted && !tempUser.tempConfirmPassword && <div className="help-block">Confirmpassword is required</div> }
                                           {tempSubmitted && !(this.state.tempIsMatched === 'true') && <div className="help-block">Confirm Password couldn't match the Password</div> }
                                       </div>
                                       <div className="form-group mb-5">
