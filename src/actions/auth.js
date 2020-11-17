@@ -10,6 +10,7 @@ import {
   removeIdUser,
   setIdUser
 } from "../utils/apiUtils";
+import { alert } from "./alerts";
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
@@ -152,6 +153,7 @@ export function signup(username, fullname, email, gender, birthday, password){
 
         
         dispatch(loginSuccess(response.data));
+        dispatch(alert("Signup Success."));
         
     })
     .catch(error => {
@@ -159,6 +161,7 @@ export function signup(username, fullname, email, gender, birthday, password){
         console.log('An error occurred:', error.response);
   
         dispatch(loginFailure(error));
+        dispatch(alert("Signup Failed, Please Try Again"));
 
     });
   }

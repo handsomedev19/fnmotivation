@@ -108,7 +108,9 @@ export function postStory(config) {
         console.log(json);
 
         axios
-            .post(SERVER_URL  + "/articles", config)
+            .post(SERVER_URL  + "/articles", config, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+              })
             .then( response => {
                 //handle success
                 console.log("Post Success");

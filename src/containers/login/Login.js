@@ -53,12 +53,12 @@ class Login extends Component {
 
     this.setState({ submitted: true });
     const { user } = this.state;
-    //console.log(user.identifier);
-    //console.log(user.password);
+    console.log(user.identifier);
+    console.log(user.password);
 
     this.props.dispatch(login(user.identifier, user.password));
-    user.identifier = "";
-    user.password = "";
+    // user.identifier = "";
+    // user.password = "";
 
     this.setState({ submitted: false });
   }

@@ -1,6 +1,7 @@
 import "isomorphic-fetch";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
+import { alert } from "../actions/alerts";
 
 export function checkStatus(response) {
   if (!response.ok) {
@@ -45,12 +46,14 @@ export function callApi(
       console.log('User token', response.data.jwt);
       //alert("Login Success");
       dispatch(onRequestSuccess(response.data));
+      dispatch(alert("Login Success!"));
     })
     .catch(error => {
         // Handle error.
         console.log('An error occurred:', error.response);
         //alert("Login Failed");
         dispatch(onRequestFailure(error.response));
+        dispatch(alert("Login Failed!"));
     });
     
      /* .then(checkStatus)

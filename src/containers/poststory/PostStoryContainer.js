@@ -15,13 +15,15 @@ class PostStoryContainer extends React.Component {
                 tempCategory: '0',
                 tempIntro: '',
                 tempBody: '',
-                tempTag: ''
+                tempTag: '',
             },
+            tempImage: '',
             tempSubmitted: false
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleImageInputChange = this.handleImageInputChange.bind(this);
     }
 
     componentWillMount(){
@@ -47,6 +49,14 @@ class PostStoryContainer extends React.Component {
         console.log(value);
     }
 
+    handleImageInputChange(event) {
+        this.setState({
+                tempImage: event.target.files[0],
+            });
+        console.log(event.target.files[0]);
+        console.log(this.state.tempImage);
+    }
+
     handleSubmit(event){
         event.preventDefault();
 
@@ -59,12 +69,20 @@ class PostStoryContainer extends React.Component {
         
         const { tempArticle } = this.state;
 
+        const formData = new FormData();
+        formData.append('file', this.state.tempImage);
+
+        // console.log("submittion data");
+        // console.log(tempArticle.tempImage);
+        // console.log(tempArticle.tempImage);
+
         const config = {
             title: tempArticle.tempTitle,
-            category: tempArticle.tempCategory,
+            article_category: tempArticle.tempCategory,
             intro: tempArticle.tempIntro,
             body: tempArticle.tempBody,
-            tag: tempArticle.tempTag
+            //tag: tempArticle.tempTag,
+            thumb: formData
         }
 
         //if (tempArticle.tempTitle && tempArticle.tempCategory != "0" && tempArticle.tempIntro && tempArticle.tempBody && tempArticle.tempTag){
@@ -124,7 +142,7 @@ class PostStoryContainer extends React.Component {
                                         <div className="form-group">
                                             <label>Thumbnail for Story</label>
                                             <label className="upload-file"> Upload
-                                                <input type="file" size="60" />
+                                                <input type="file" name="files" onChange={this.handleImageInputChange}/>
                                             </label> 
                                             <span>No file selected</span>
                                         </div>

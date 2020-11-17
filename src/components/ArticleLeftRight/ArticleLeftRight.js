@@ -26,7 +26,7 @@ class ArticleLeftRight extends React.Component {
                                 function(article){
                                     return (
                                         <div className="article-stories-box">
-                                            <span>{article.article_category.title}</span> 
+                                            <span>{article.article_category && article.article_category.title}</span> 
                                             <h3>{article.title}</h3>
                                             <h4>{article.outer_url}</h4>
                                             <p>{article.intro} </p>

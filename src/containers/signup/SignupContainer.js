@@ -1,13 +1,11 @@
 import React from 'react'
-import axios from 'axios'
 import PropTypes from "prop-types";
 import {Container, Row, Col} from 'react-bootstrap'
 import GoogleIcon from '../../images/google-icon.svg'
 import TwitterIcon from '../../images/twitter-icon2.svg'
 import FacebookIcon from '../../images/facebook-icon2.svg'
 import { connect } from "react-redux";
-import { signup } from "../../actions/auth"
-
+import { signup } from "../../actions/auth";
 
 class SignupContainer extends React.Component {
 
@@ -25,8 +23,9 @@ class SignupContainer extends React.Component {
             },
             tempGender: 'male',
             tempCheckValue: 'false',
-            tempIsMatched: 'false',
-            tempSubmitted: false
+            tempIsMatched: 'true',
+            tempSubmitted: false,
+            show: false
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -46,7 +45,11 @@ class SignupContainer extends React.Component {
           } catch (err) {
             nextProps.history.replace("/");
           }
+        } else {
+            //console.log("signup failed");
         }
+
+        
     }
     
     handleChange(event) {    
@@ -59,29 +62,29 @@ class SignupContainer extends React.Component {
             }
         });
 
-        console.log(name);
-        console.log(value);
+        //console.log(name);
+        //console.log(value);
     }
 
     handleRadioClick(event) {    
         const { name, value } = event.target;
-        console.log(name + ' ' + value);
+        //console.log(name + ' ' + value);
         this.setState({tempGender: name});
     }
 
     handleCheckBox(event) {    
         const { name, value } = event.target;
-        console.log("Checked" + ' ' + value);
+        //console.log("Checked" + ' ' + value);
         if (value === 'true') { this.setState({tempCheckValue: 'false'});}
         if (value === 'false') { this.setState({tempCheckValue: 'true'});}
     }
 
     handleSignup(event) {
         event.preventDefault();
-        console.log(this.state.tempUser.tempUserName);
-        console.log(this.state.tempUser.tempEmail);
-        console.log(this.state.tempUser.tempPassword);
-        console.log(this.state.tempGender);
+        //console.log(this.state.tempUser.tempUserName);
+        //console.log(this.state.tempUser.tempEmail);
+        //console.log(this.state.tempUser.tempPassword);
+        //console.log(this.state.tempGender);
 
         this.setState({ tempSubmitted: true });
         const { tempUser } = this.state;
@@ -95,19 +98,18 @@ class SignupContainer extends React.Component {
             password: tempUser.tempPassword,
         };
 
-        if (tempUser.tempPassword === tempUser.tempConfirmPassword) {
-            this.setState({tempIsMatched: 'true'});
-            if (this.state.tempCheckValue === 'true' && tempUser.tempUserName && tempUser.tempEmail && tempUser.tempPassword){
-
+       
+        if (tempUser.tempUserName && tempUser.tempFullName && tempUser.tempEmail && tempUser.tempBirthday && tempUser.tempPassword){
+                
+            
+            if (tempUser.tempPassword === tempUser.tempConfirmPassword) {
                 this.props.dispatch(signup(config.username, config.fullname, config.email, config.gender, config.birthday, config.password));
-              
-                this.setState({ tempSubmitted: false });
-                //this.setState({tempUser : {tempUserName: '', tempFullName: '', tempEmail: '', tempPassword: '', tempBirthday: '', tempConfirmPassword: ''}});
-                this.setState({tempIsMatched: 'false'});
-                //this.setState({tempCheckValue: 'false'});
+            } else {
+                this.setState({ tempIsMatched: 'false' });
             }
+             
         } else {
-            this.setState({tempIsMatched: 'false'});
+            
         }
                 
     };
@@ -119,7 +121,7 @@ class SignupContainer extends React.Component {
         <div className="wrapper">
           
           <section className="login-sec register-sec">
-                  <Container fluid>
+                  <Container fluid>                                   
                       <Row>
                           <Col col={12}>
                               <div className="login-inner">
@@ -199,7 +201,7 @@ class SignupContainer extends React.Component {
                                           <label>Confirm Password</label>
                                           <input type="password" className="form-control" placeholder="" name="tempConfirmPassword" value={tempUser.tempConfirmPassword} onChange={this.handleChange}/>
                                           {tempSubmitted && !tempUser.tempConfirmPassword && <div className="help-block">Confirmpassword is required</div> }
-                                          {tempSubmitted && !(this.state.tempIsMatched === 'true') && <div className="help-block">Confirm Password couldn't match the Password</div> }
+                                          {tempSubmitted && (this.state.tempIsMatched === 'false') && <div className="help-block">Confirm Password couldn't match the Password</div> }
                                       </div>
                                       <div className="form-group mb-5">
                                           <label className="check ">I have read and agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
@@ -216,10 +218,13 @@ class SignupContainer extends React.Component {
                                       </div>
                                   </form>
                               </div>
+
+
+                                
                           </Col>
                       </Row>
                   </Container>
-              </section>
+            </section>
   
         </div>
     );
@@ -241,11 +246,13 @@ SignupContainer.propTypes = {
 
 function mapStateToProps(state) {
     const {auth} = state;
+    const { alerts } = state;
+
     if (auth) {
-        return { user: auth.user, loginError: auth.loginError };
+        return { user: auth.user, showAlert: alerts.showAlert, message: alerts.message };
       }
 
-      return { user: null };
+      return { user: null, showAlert: alerts.showAlert, message: alerts.message };
 }
 
 export default connect(mapStateToProps)(SignupContainer);

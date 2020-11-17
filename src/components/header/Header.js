@@ -126,6 +126,8 @@ class Header extends Component {
                       </Collapse>
                   </Col>
               </Row>
+          
+              <Alerts/>
           </Container>
       </header>
       

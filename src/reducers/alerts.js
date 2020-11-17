@@ -2,12 +2,15 @@ import {
   CONNECT_SUCCESS,
   CONNECT_ERROR,
   ALERT,
-  DISMISS
+  DISMISS,
+  HIDE_ALERT
 } from "../actions/alerts";
 
 const initialState = {
   alerts: [],
-  hasError: false
+  hasError: false,
+  showAlert: false,
+  message: null
 };
 
 export default function alerts(state = initialState, action = {}) {
@@ -44,7 +47,7 @@ export default function alerts(state = initialState, action = {}) {
         }
       );
     }
-    case ALERT: {
+    /*case ALERT: {
       const alerts = state.alerts || [];
       return Object.assign(
         {},
@@ -54,10 +57,27 @@ export default function alerts(state = initialState, action = {}) {
           alerts: [action.payload, ...alerts]
         }
       );
-    }
+    }*/
     case DISMISS: {
       return Object.assign({}, state, { alerts: [] });
     }
+
+    case ALERT: {
+      return {
+        ...state,
+        showAlert: true,
+        message: action.payload
+      }
+    }
+
+    case HIDE_ALERT: {
+      return {
+        ...state,
+        showAlert: false,
+        message: null
+      }
+    }
+
     default:
       return state;
   }

@@ -1,134 +1,62 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React from "react";
 import { connect } from "react-redux";
-import { dismiss } from "../../actions/alerts";
-import connectToAlerts from "../../utils/socketUtils";
-import classNames from "classnames";
+import PropTypes from "prop-types";
+import Toast from 'react-bootstrap/Toast';
+import { hideAlert } from "../../actions/alerts";
 
-class Alerts extends Component {
-  dismiss = () => {
-    const { dispatch } = this.props;
-    dispatch(dismiss());
-  };
+class Alert extends React.Component {
 
-  reconnect = () => {
-    const { store } = this.context;
-    connectToAlerts(store);
-  };
+    constructor(props){
+        super(props);
+    }
 
-  alert = (type, message, time) => {
-    const iconClass = classNames(
-      "fa",
-      { "fa-info-circle text-success": type === "info" },
-      { "fa-warning text-danger": type === "error" }
-    );
-    const localTime = new Date(time);
-    return (
-      <span>
-        <i style={{ marginRight: "0.5em" }} className={iconClass} />
-        {message}
-        {" "}
-        <span className="tag tag-default text-xs-right">
-          {localTime.toLocaleString()}
-        </span>
-      </span>
-    );
-  };
 
-  render() {
-    const { alerts, hasError } = this.props;
-    const count = (alerts && alerts.length) || 0;
-    const badge = count <= 1 ? `${count} new message` : `${count} new messages`;
-    return (
-      <li className="dropdown nav-item">
-        <a
-          href=""
-          className="nav-link"
-          data-toggle="dropdown"
-          role="button"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          <i className="fa fa-bell warning" style={{ marginRight: "0.5em" }} />
-          <span className="tag tag-warning">{badge}</span>
-        </a>
-        <ul
-          className="dropdown-menu"
-          style={{
-            right: 0,
-            left: "auto",
-            height: "auto",
-            maxHeight: "300px",
-            overflowX: "hidden"
-          }}
-        >
-          <a className="dropdown-item text-xs-center">
-            {count === 0 &&
-              <span>
-                No alerts as of{" "}
-                <span className="tag tag-default">
-                  {new Date().toLocaleString()}
-                </span>
-              </span>}
-            {count > 0 &&
-              <span>
-                Alerts as of{" "}
-                <span className="tag tag-default">
-                  {new Date().toLocaleString()}
-                </span>
-              </span>}
-            <div className="dropdown-divider" />
-          </a>
-
-          {count > 0 &&
-            alerts.map((alert, i) => (
-              <a key={i} className="dropdown-item">
-                {this.alert(alert.type, alert.message, alert.time)}
-                <div className="dropdown-divider" />
-              </a>
-            ))}
-
-          <div className="dropdown-item text-xs-center">
-            {count > 0 &&
-              <a
-                className="btn btn-sm btn-default"
-                href=""
-                title="Dismiss all"
-                onClick={this.dismiss}
-              >
-                <i className="fa fa-remove" style={{ marginRight: "0.5em" }} />
-                Dismiss all
-              </a>}
-            {hasError &&
-              <a
-                className="btn btn-sm btn-primary"
-                href=""
-                title="Reconnect"
-                onClick={this.reconnect}
-              >
-                <i className="fa fa-refresh" style={{ marginRight: "0.5em" }} />
-                Reconnect
-              </a>}
-          </div>
-        </ul>
-      </li>
-    );
-  }
+    render () {
+        return (
+            <div style=
+            {{position: "fixed",
+                top:"10px",
+                right: "10px",
+                minWidth: "300px",
+                backgroundColor: "#d4edda",
+                borderRadius: "5px", 
+                zIndex: "999",
+                borderColor: "#c3e6cb",
+                color: "#155724"
+            }}>
+                <Toast onClose={() => this.props.dispatch(hideAlert())} show={this.props.showAlert} delay={3000} autohide>
+                    {/*<Toast.Header>
+                        <img
+                        src="holder.js/20x20?text=%20"
+                        className="rounded mr-2"
+                        alt=""
+                        />
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>11 mins ago</small>
+                    </Toast.Header> */}
+                    <Toast.Body style={{backgroundColor: "#d4edda", fontSize: "18px"}}>{this.props.message}</Toast.Body>
+                </Toast>
+            </div>
+        );
+    }
 }
 
-Alerts.contextTypes = {
-  store: PropTypes.object.isRequired
+Alert.contextTypes = {
+    store: PropTypes.object.isRequired
 };
-
-Alerts.propTypes = {
-  alerts: PropTypes.array.isRequired,
-  hasError: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired
+  
+Alert.propTypes = {
+    dispatch: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
-  const { alerts } = state;
-  return { alerts: alerts.alerts, hasError: alerts.hasError };
+    const { alerts } = state;
+    const { showAlert } = alerts;
+    const { message } = alerts;
+
+    console.log("notification: " + showAlert);
+
+    return { showAlert: showAlert, message: message };
 }
 
-export default connect(mapStateToProps)(Alerts);
+export default connect(mapStateToProps)(Alert);
