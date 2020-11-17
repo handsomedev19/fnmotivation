@@ -11,13 +11,13 @@ class PostStoryContainer extends React.Component {
 
         this.state = {
             tempArticle: {
-                tempTitle: '',
-                tempCategory: '0',
-                tempIntro: '',
-                tempBody: '',
-                tempTag: '',
+                title: '',
+                article_category: '0',
+                intro: '',
+                body: '',
+                article_tags: '',
             },
-            tempImage: '',
+            thumb: '',
             tempSubmitted: false
         };
 
@@ -51,43 +51,66 @@ class PostStoryContainer extends React.Component {
 
     handleImageInputChange(event) {
         this.setState({
-                tempImage: event.target.files[0],
+                thumb: event.target.files[0],
             });
         console.log(event.target.files[0]);
-        console.log(this.state.tempImage);
+        console.log(this.state.thumb);
     }
 
     handleSubmit(event){
         event.preventDefault();
 
-        console.log(this.state.tempArticle.tempTitle);
-        console.log(this.state.tempArticle.tempCategory);
-        console.log(this.state.tempArticle.tempIntro);
-        console.log(this.state.tempArticle.tempTag);
+        const formElement = document.querySelector("#post-story-submit");
+
+        //const request = new XMLHttpRequest();
+
+        const formData = new FormData();
+
+        const formElements = formElement.elements;
+
+        console.log(formElements);
+
+        const data = {};
+
+        for (let i = 0; i < formElements.length; i++) {
+        const currentElement = formElements[i];
+        if (!['submit', 'file'].includes(currentElement.type)) {
+            data[currentElement.name] = currentElement.value;
+            console.log(currentElement.name);
+            console.log(currentElement.value);
+        } else if (currentElement.type === 'file') {
+            const file = currentElement.files[0];
+            formData.append(`files.${currentElement.name}`, file, file.name);
+        }
+        }
+
+        data["outer"] = false;
+        data["article_author"] = this.props.auth.id;
+
+
+        formData.append('data', JSON.stringify(data));
+        console.log(data);
+
+        //request.open('POST', `http://localhost:1337/articles`);
+
+        //request.send(formData);
+
+        /*console.log(this.state.tempArticle.title);
+        console.log(this.state.tempArticle.article_category);
+        console.log(this.state.tempArticle.intro);
+        console.log(this.state.tempArticle.article_tags);*/
 
         this.setState({tempSubmitted: true});
         
         const { tempArticle } = this.state;
 
-        const formData = new FormData();
-        formData.append('file', this.state.tempImage);
-
         // console.log("submittion data");
-        // console.log(tempArticle.tempImage);
-        // console.log(tempArticle.tempImage);
+        // console.log(tempArticle.thumb);
+        // console.log(tempArticle.thumb);
 
-        const config = {
-            title: tempArticle.tempTitle,
-            article_category: tempArticle.tempCategory,
-            intro: tempArticle.tempIntro,
-            body: tempArticle.tempBody,
-            //tag: tempArticle.tempTag,
-            thumb: formData
-        }
+        //if (tempArticle.title && tempArticle.article_category != "0" && tempArticle.intro && tempArticle.body && tempArticle.tag){
 
-        //if (tempArticle.tempTitle && tempArticle.tempCategory != "0" && tempArticle.tempIntro && tempArticle.tempBody && tempArticle.tempTag){
-
-            this.props.dispatch(postStory(config));
+            this.props.dispatch(postStory(formData));
             this.setState({tempSubmitted: false});
         //}
     }
@@ -104,13 +127,13 @@ class PostStoryContainer extends React.Component {
                             <div className="col-12">
                                 <div className="post-story-inner">
                                     <h3>Post your story here</h3>
-                                    <form>
+                                    <form id="post-story-submit">
                                         <div className="row">
                                             <div className="col-md-6">
                                                 <div className="form-group">
                                                     <label>Title</label>
-                                                    <input type="text" className="form-control" placeholder="" name="tempTitle" value={tempArticle.tempTitle} onChange={this.handleChange}/>
-                                                    {tempSubmitted && !tempArticle.tempTitle && <div className="help-block">Title is required</div> }
+                                                    <input type="text" className="form-control" placeholder="" name="title" value={tempArticle.title} onChange={this.handleChange}/>
+                                                    {tempSubmitted && !tempArticle.title && <div className="help-block">Title is required</div> }
                                                 </div>
                                             </div>
                                         </div>
@@ -118,7 +141,7 @@ class PostStoryContainer extends React.Component {
                                             <div className="col-md-6">
                                                 <div className="form-group">
                                                     <label>Community Categories</label>
-                                                    <select className="form-control" name="tempCategory" onChange={this.handleChange}>
+                                                    <select className="form-control" name="article_category" onChange={this.handleChange}>
                                                         <option value="0">Select Community</option>
                                                     { this.props.categories && this.props.categories.map(function(category) {
                                                         return (
@@ -126,7 +149,7 @@ class PostStoryContainer extends React.Component {
                                                         );
                                                     }) }
                                                     </select>
-                                                    {tempSubmitted && tempArticle.tempCategory == "0" && <div className="help-block">Please select a category</div> }
+                                                    {tempSubmitted && tempArticle.article_category == "0" && <div className="help-block">Please select a category</div> }
                                                 </div>
                                             </div>
                                         </div>
@@ -134,32 +157,32 @@ class PostStoryContainer extends React.Component {
                                             <div className="col-md-6">
                                                 <div className="form-group">
                                                     <label>Short Summary of Story</label>
-                                                    <input type="text" className="form-control" placeholder="" name="tempIntro" value={tempArticle.tempIntro} onChange={this.handleChange}/>
-                                                    {tempSubmitted && !tempArticle.tempIntro && <div className="help-block">Summary is required</div> }
+                                                    <input type="text" className="form-control" placeholder="" name="intro" value={tempArticle.intro} onChange={this.handleChange}/>
+                                                    {tempSubmitted && !tempArticle.intro && <div className="help-block">Summary is required</div> }
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label>Thumbnail for Story</label>
                                             <label className="upload-file"> Upload
-                                                <input type="file" name="files" onChange={this.handleImageInputChange}/>
+                                                <input type="file" name="thumb" onChange={this.handleImageInputChange}/>
                                             </label> 
                                             <span>No file selected</span>
                                         </div>
                                         <div className="form-group">
                                             <label>Body</label>
-                                            <textarea className="form-control" placeholder="" name="tempBody" value={tempArticle.tempBody} onChange={this.handleChange}></textarea>
-                                            {tempSubmitted && !tempArticle.tempBody && <div className="help-block">Body is required</div> }
+                                            <textarea className="form-control" placeholder="" name="body" value={tempArticle.body} onChange={this.handleChange}></textarea>
+                                            {tempSubmitted && !tempArticle.body && <div className="help-block">Body is required</div> }
                                         </div>
                                         <div className="form-group">
                                             <label>Tags</label>
                                             <div className="bs-example">
-                                                <input type="text" name="tempTag" className="form-control" data-role="tagsinput" value={tempArticle.tempTag} onChange={this.handleChange} />
-                                                {tempSubmitted && !tempArticle.tempTag && <div className="help-block">Tag is required</div> }
+                                                <input type="text" name="article_tags" className="form-control" data-role="tagsinput" value={tempArticle.article_tags} onChange={this.handleChange} />
+                                                {tempSubmitted && !tempArticle.article_tags && <div className="help-block">Tag is required</div> }
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <input className="post-btn" value="Post Story" type="button" onClick={this.handleSubmit}/>
+                                            <input className="post-btn" value="Post Story" type="submit" onClick={this.handleSubmit}/>
                                         </div>
                                     </form>
                                 </div>
@@ -184,10 +207,12 @@ function mapStateToProps(state) {
     const {articles} = state;
     const {categories} = state.articles;
     const {message} = state.articles;
+    const {auth} = state;
 
     return {
         categories: categories,
-        message: message
+        message: message,
+        auth: auth
     }
 }
 

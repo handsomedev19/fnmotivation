@@ -18,7 +18,7 @@ const HomeContainer = () => {
                                 <h1>Future Now Motivation is a social community</h1>
                                 <p>where everyone can share their stories about their issues for others to read,
                                     learn, engage and connect.</p>
-                                <a href="/signup">REGISTER NOW</a>
+                                <a href="/#signup">REGISTER NOW</a>
                             </div>
                         </Col>
                     </Row>

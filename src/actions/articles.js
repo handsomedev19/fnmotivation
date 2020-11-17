@@ -1,5 +1,6 @@
 import axios from "axios";
 import { SERVER_URL } from "../utils/apiUtils"
+import { alert } from "../actions/alerts"
 
 export const GET_CATEGORIES_SUCCESS = "get_categories_success";
 export const GET_CATEGORIES_FAILURE = "get_categories_failure";
@@ -85,44 +86,29 @@ export function getArticles() {
     }
 }
 
-export function postStory(config) {
+export function postStory(formData) {
     return dispatch => {
 
-        /*config = {
-            title: "tempArticle.tempTitle",
-            category: "tempArticle.tempCategory",
-            intro: "tempArticle.tempIntro",
-            body: "tempArticle.tempBody",
-            tag: "tempArticle.tempTag"
-        }*/
-        console.log(JSON.stringify(config));
-
-        var bodyFormData = new FormData();
-        bodyFormData.append('title', 'aaa');
-
-        var object = {};
-        bodyFormData.forEach(function(value, key){
-            object[key] = value;
-        });
-        var json = JSON.stringify(object);
-        console.log(json);
+       
+        console.log("post story here");
 
         axios
-            .post(SERVER_URL  + "/articles", config, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-              })
+            .post(SERVER_URL  + "/articles", formData)
             .then( response => {
                 //handle success
                 console.log("Post Success");
                 console.log(response.data);
 
-                dispatch(postArticleSuccess());
+                //dispatch(postArticleSuccess());
+                dispatch(alert("Post Story Success!"));
+
             })
             .catch( error => {
                 //handle error
                 console.log('An error occurred:', error.response);
 
-                dispatch(postArticleFailure());
+                //dispatch(postArticleFailure());
+                dispatch(alert("Post Story Failed!"));
             });
     }
 }
