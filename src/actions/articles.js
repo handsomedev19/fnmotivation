@@ -8,6 +8,8 @@ export const GET_ARTICLES_SUCCESS = "get_articles_success";
 export const GET_ARTICLES_FAILURE = "get_articles_failure";
 export const POST_STORY_SUCCESS = "post_article_success";
 export const POST_STORY_FAILURE = "post_article_failure";
+export const GET_ARTICLE_TAGS = "get_article_tags";
+export const SET_ARTICLE_TAGS = "set_article_tags";
 
 function getCategoriesSuccess(payload){
     return {
@@ -110,5 +112,18 @@ export function postStory(formData) {
                 //dispatch(postArticleFailure());
                 dispatch(alert("Post Story Failed!"));
             });
+    }
+}
+
+export function setTags(payload){
+    return {
+        type: SET_ARTICLE_TAGS,
+        payload: payload
+    }
+}
+
+export function getTags() {
+    return {
+        type: GET_ARTICLE_TAGS
     }
 }

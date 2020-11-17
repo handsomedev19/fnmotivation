@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getCategories } from "../../actions/articles";
 import { postStory } from "../../actions/articles";
+import TagsInput from "../../components/TagsInput/TagsInput";
+import { getTags } from "../../actions/articles";
 
 class PostStoryContainer extends React.Component {  
 
@@ -16,9 +18,11 @@ class PostStoryContainer extends React.Component {
                 intro: '',
                 body: '',
                 article_tags: '',
+                thumb: '',
             },
-            thumb: '',
-            tempSubmitted: false
+            tempSubmitted: false,
+            tags: [],
+            isImgaeSelected: false
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -45,24 +49,21 @@ class PostStoryContainer extends React.Component {
             }
         });
 
-        console.log(name);
-        console.log(value);
+        //console.log(name);
+        //console.log(value);
     }
 
     handleImageInputChange(event) {
-        this.setState({
-                thumb: event.target.files[0],
-            });
-        console.log(event.target.files[0]);
-        console.log(this.state.thumb);
+        this.setState({isImgaeSelected: true});        
     }
 
     handleSubmit(event){
         event.preventDefault();
 
-        const formElement = document.querySelector("#post-story-submit");
+        //console.log("article_tags");
+        //console.log(this.props.articleTags);
 
-        //const request = new XMLHttpRequest();
+        const formElement = document.querySelector("#post-story-submit");
 
         const formData = new FormData();
 
@@ -73,23 +74,35 @@ class PostStoryContainer extends React.Component {
         const data = {};
 
         for (let i = 0; i < formElements.length; i++) {
-        const currentElement = formElements[i];
-        if (!['submit', 'file'].includes(currentElement.type)) {
-            data[currentElement.name] = currentElement.value;
-            console.log(currentElement.name);
-            console.log(currentElement.value);
-        } else if (currentElement.type === 'file') {
-            const file = currentElement.files[0];
-            formData.append(`files.${currentElement.name}`, file, file.name);
-        }
+            const currentElement = formElements[i];
+            if (!['submit', 'file'].includes(currentElement.type)) {
+                data[currentElement.name] = currentElement.value;
+                //console.log(currentElement.name);
+                //console.log(currentElement.value);
+            } else if (currentElement.type === 'file') {
+                if (currentElement.files[0]) {
+                    const file = currentElement.files[0];
+                    formData.append(`files.${currentElement.name}`, file, file.name);
+                } else {
+                    //console.log("In case of alt image");
+                    //console.log(data["article_category"]);
+                    const tempdata = this.props.categories.filter(category => category.id == data["article_category"])[0];
+                    data["thumb"] = tempdata.thumb;
+                    //console.log("alt image url: ");
+                    //console.log(data["thumb"]);
+                }
+            }
         }
 
         data["outer"] = false;
         data["article_author"] = this.props.auth.id;
 
+        const data1 = {};
+        data1["article_tags"] = this.props.articleTags;
+
 
         formData.append('data', JSON.stringify(data));
-        console.log(data);
+        //console.log(data);
 
         //request.open('POST', `http://localhost:1337/articles`);
 
@@ -104,19 +117,22 @@ class PostStoryContainer extends React.Component {
         
         const { tempArticle } = this.state;
 
-        // console.log("submittion data");
-        // console.log(tempArticle.thumb);
-        // console.log(tempArticle.thumb);
+        //console.log(tempArticle);
 
-        //if (tempArticle.title && tempArticle.article_category != "0" && tempArticle.intro && tempArticle.body && tempArticle.tag){
+        if (tempArticle.title && tempArticle.article_category != "0" && tempArticle.intro && tempArticle.body){
 
             this.props.dispatch(postStory(formData));
             this.setState({tempSubmitted: false});
-        //}
+            this.setState({isImgaeSelected: false});
+        }
     }
 
     render() {
         const {tempArticle, tempSubmitted} = this.state;
+
+        const selectedTags = tags => {
+            //console.log(tags);
+            };
 
 
         return (
@@ -167,24 +183,26 @@ class PostStoryContainer extends React.Component {
                                             <label className="upload-file"> Upload
                                                 <input type="file" name="thumb" onChange={this.handleImageInputChange}/>
                                             </label> 
-                                            <span>No file selected</span>
+                                            {this.state.isImgaeSelected ? <span>A file selected</span> : <span>No file selected</span>}
                                         </div>
                                         <div className="form-group">
                                             <label>Body</label>
                                             <textarea className="form-control" placeholder="" name="body" value={tempArticle.body} onChange={this.handleChange}></textarea>
                                             {tempSubmitted && !tempArticle.body && <div className="help-block">Body is required</div> }
                                         </div>
-                                        <div className="form-group">
+                                        <div className="">
                                             <label>Tags</label>
-                                            <div className="bs-example">
-                                                <input type="text" name="article_tags" className="form-control" data-role="tagsinput" value={tempArticle.article_tags} onChange={this.handleChange} />
-                                                {tempSubmitted && !tempArticle.article_tags && <div className="help-block">Tag is required</div> }
+                                            <div className="">
+                                                {/*<input type="text" name="article_tags" className="form-control" value={tempArticle.article_tags} onChange={this.handleChange} />*/}
+                                                <TagsInput type="tags" selectedTags={selectedTags}  tags={[]}/> 
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <input className="post-btn" value="Post Story" type="submit" onClick={this.handleSubmit}/>
+                                            <input className="post-btn" value="Post Story" type="button" onClick={this.handleSubmit}/>
                                         </div>
                                     </form>
+
+                                    
                                 </div>
                             </div>
                         </div>
@@ -208,11 +226,13 @@ function mapStateToProps(state) {
     const {categories} = state.articles;
     const {message} = state.articles;
     const {auth} = state;
+    const { tags } = articles;
 
     return {
         categories: categories,
         message: message,
-        auth: auth
+        auth: auth,
+        articleTags: tags 
     }
 }
 

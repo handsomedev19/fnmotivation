@@ -2,11 +2,14 @@ import { GET_CATEGORIES_SUCCESS } from "../actions/articles";
 import { GET_ARTICLES_SUCCESS } from "../actions/articles";
 import { POST_STORY_SUCCESS } from "../actions/articles";
 import { POST_STORY_FAILURE } from "../actions/articles";
+import { GET_ARTICLE_TAGS } from  "../actions/articles";
+import { SET_ARTICLE_TAGS } from "../actions/articles";
 
 const initialState = {
     categories: null,
     articles: null,
-    meessage: null
+    meessage: null,
+    tags: []
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -33,6 +36,17 @@ export default function articles (state = initialState, action = {}) {
             return {
                 ...state,
                 meessage : "Your Submition was failed"
+            }
+
+        case GET_ARTICLE_TAGS:
+            return {
+                state
+            }
+        
+        case  SET_ARTICLE_TAGS:
+            return {
+                ...state,
+                tags: action.payload
             }
 
 
