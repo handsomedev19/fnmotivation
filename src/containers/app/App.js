@@ -19,6 +19,7 @@ import PostNewArticleContainer from "../postnewarticle/PostNewArticleContainer"
 import PostStoryContainer from "../poststory/PostStoryContainer"
 import CommunitiesContainer from "../communities/CommunitiesContainer"
 import SignupContainer from "../signup/SignupContainer"
+import ArticleContainer from "../article/ArticleContainer";
 
 import { logout } from "../../actions/auth";
 import auth from "../../reducers/auth";
@@ -38,7 +39,7 @@ class App extends Component {
     console.log("user token: " + auth.token);
     console.log("user username: " + user);
 
-    const isAuthenticated = true && auth.token;
+    const isAuthenticated = !!auth.token;
     console.log("isAuthenticated: " + isAuthenticated);
     
     return (
@@ -52,6 +53,7 @@ class App extends Component {
                 <Route path="/communities" component={CommunitiesContainer} />
                 <Route path="/login" component={Login} />
                 <Route path="/signup" component={SignupContainer} />
+                <Route path="/articles/:articleId" component={ArticleContainer}/>
                 <PrivateRoute
                   path="/post-story"
                   isAuthenticated={isAuthenticated}

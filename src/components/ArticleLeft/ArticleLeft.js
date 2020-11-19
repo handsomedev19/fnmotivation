@@ -1,113 +1,24 @@
 import React from 'react'
-import { Row, Col, Nav, Tab, Modal} from 'react-bootstrap'  
+import { Row, Col, Nav, Tab} from 'react-bootstrap' 
 import artImg1 from '../../images/drug-addiction-img.png'
 import artImg2 from '../../images/alcohol-addiction-img.png'
 import artImg3 from '../../images/insecurity-addiction-img.png'
 import artImg4 from '../../images/related-articles-img.png'
-import DialImg1 from '../../images/heart-disease-img.png'
-import DialImgCheck from '../../images/check-icon.svg'
 import { connect } from 'react-redux'
 import PropTypes from "prop-types";
 import { getCategories } from "../../actions/articles";
 import { getArticles } from "../../actions/articles";
-
-
-function CategoryModal(props) {
-    return (
-        <div>
-            <Modal
-                {...props}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                className="categories-modal"
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                            <h3>Select Categories to Subscribe</h3>
-                            <p>Choose the topics that you are most interested in</p>
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {/*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><img src={ImagCloseIcon} alt="" /></span>
-                    </button>*/}
-                    
-                    <ul>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"><img src={DialImg1} alt="" class="img-fluid" />
-                                <span><img src={DialImgCheck} alt="" /></span>
-                            </a>
-                        </li>
-                    </ul>
-                            
-                </Modal.Body>
-                <Modal.Footer>
-                    <a class="subscribe-btn" href="#">SUBSCRIBE </a>
-                </Modal.Footer>
-            </Modal>
-        </div>
-    );
-}
+import { getCommunityStories } from "../../actions/articles";
+import { SERVER_URL } from '../../utils/apiUtils'
+import { Link } from 'react-router-dom'
+import auth from '../../reducers/auth'
 
 class ArticleLeft extends React.Component {
 
     constructor (props) {
         super(props);
 
-        this.state = {
-            modalShow: false
-        };
+        this.handleChange = this.handleChange.bind(this);
 
     }
 
@@ -116,10 +27,22 @@ class ArticleLeft extends React.Component {
     this.props.dispatch(getArticles());    
   }
 
+  handleChange(event) {
+    const { name, value } = event.target;
+    //console.log("community");
+    //console.log(value);
+
+    if (value != "0") {
+        this.props.dispatch(getCommunityStories(value));
+    } 
+
+  }
+
   
   render() {
 
     //console.log("categories: " + this.props.categories);
+    const IsAuthenticated = !!this.props.auth.token;
 
 
     return (
@@ -138,7 +61,7 @@ class ArticleLeft extends React.Component {
                                         <   Nav.Link eventKey="popular">Popular</Nav.Link>
                                         </Nav.Item>
                                     </Nav>
-                                    <select className="form-control">
+                                    <select className="form-control" onChange={this.handleChange}>
                                         <option value="0">Select Community</option>
                                         { this.props.categories && this.props.categories.map(function(category) {
                                             return (
@@ -152,7 +75,50 @@ class ArticleLeft extends React.Component {
                                         <Tab.Pane eventKey="recent">
                                             <div className="related-articles"> 
                                                 <Row>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6} >
+                                                    { this.props.communityRecentStories && this.props.communityRecentStories.map(function(story, index){
+                                                       const {article_author} = story;
+                                                       const {article_category} = story;
+                    
+                                                                                                               
+                                                       if (IsAuthenticated) {
+                                                            return (
+                                                                <Col xl={3} lg={4} md={4} sm={6} xs={6} >
+                                                                    <Link to={`/articles/${story.id}`} activeClassName="active">
+                                                                        <div className="related-articles-box">
+                                                                            <div className="image-holder">
+                                                                                
+                                                                                    <img src={story.thumb ? SERVER_URL + "/uploads/" + story.thumb.name : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
+                                                                                
+                                                                            </div>
+                                                                            <div className="text-box">
+                                                                            <h4>{story.title && story.title}</h4>
+                                                                                <span>{article_author && article_author.username}</span>
+                                                                                <p>{story.intro && story.intro}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </Link>
+                                                                </Col>
+                                                            );
+                                                       } else {
+                                                            return (
+                                                                <Col xl={3} lg={4} md={4} sm={6} xs={6} >
+                                                                    <a href="#" data-toggle="modal" data-target="#exampleModal">
+                                                                        <div className="related-articles-box">
+                                                                            <div className="image-holder">                                                
+                                                                                <img src={story.thumb ? SERVER_URL + "/uploads/" + story.thumb.name : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
+                                                                            </div>
+                                                                            <div className="text-box">
+                                                                            <h4>{story.title && story.title}</h4>
+                                                                                <span>{article_author && article_author.username}</span>
+                                                                                <a href="/#login"><p>{story.intro && story.intro}</p></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </a>
+                                                                </Col>
+                                                            );
+                                                       }  
+                                                    })}
+                                                    {/*<Col xl={3} lg={4} md={4} sm={6} xs={6} >
                                                         <a href="#" data-toggle="modal" data-target="#exampleModal">
                                                             <div className="related-articles-box">
                                                                 <div className="image-holder">
@@ -166,48 +132,6 @@ class ArticleLeft extends React.Component {
                                                             </div>
                                                         </a>
                                                     </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}>
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg2} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>How to quite alcohol</h4>
-                                                                    <span><strong>Udcy</strong></span>
-                                                                    <p>Great Infographic</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6} >
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg3} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Questions you must </h4>
-                                                                    <span><strong>Jerrym</strong></span>
-                                                                    <p>Understanding is key to having a healthy mind and life</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6} >
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg4} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Weight loss quote</h4>
-                                                                    <span><strong>Sussykai</strong></span>
-                                                                    <p>Take great care of your body</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>                                                                    
                                                     <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
                                                         <a href="#" data-toggle="modal" data-target="#exampleModal">
                                                             <div className="related-articles-box">
@@ -222,165 +146,58 @@ class ArticleLeft extends React.Component {
                                                             </div>
                                                         </a>
                                                     </Col>                                                                   
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg2} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>How to quite alcohol</h4>
-                                                                    <span><strong>Udcy</strong></span>
-                                                                    <p>Great Infographic</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg3} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Questions you must </h4>
-                                                                    <span><strong>Jerrym</strong></span>
-                                                                    <p>Understanding is key to having a healthy mind and life</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg4} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Weight loss quote</h4>
-                                                                    <span><strong>Sussykai</strong></span>
-                                                                    <p>Take great care of your body</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg1} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Heroin Addiction</h4>
-                                                                    <span>bellajhuskey</span>
-                                                                    <p>I was diagnosed with depression, anxiety and OCD when i was 10.</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg2} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>How to quite alcohol</h4>
-                                                                    <span><strong>Udcy</strong></span>
-                                                                    <p>Great Infographic</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg3} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Questions you must </h4>
-                                                                    <span><strong>Jerrym</strong></span>
-                                                                    <p>Understanding is key to having a healthy mind and life</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg4} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Weight loss quote</h4>
-                                                                    <span><strong>Sussykai</strong></span>
-                                                                    <p>Take great care of your body</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg1} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Heroin Addiction</h4>
-                                                                    <span>bellajhuskey</span>
-                                                                    <p>I was diagnosed with depression, anxiety and OCD when i was 10.</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg2} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>How to quite alcohol</h4>
-                                                                    <span><strong>Udcy</strong></span>
-                                                                    <p>Great Infographic</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg3} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Questions you must </h4>
-                                                                    <span><strong>Jerrym</strong></span>
-                                                                    <p>Understanding is key to having a healthy mind and life</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                    <Col xl={3} lg={4} md={4} sm={6} xs={6}  className="d-none d-sm-block">
-                                                        <a href="#" data-toggle="modal" data-target="#exampleModal">
-                                                            <div className="related-articles-box">
-                                                                <div className="image-holder">
-                                                                    <img src={artImg4} alt=""  onClick={() => this.setState({modalShow: true})} fluid/>
-                                                                </div>
-                                                                <div className="text-box">
-                                                                    <h4>Weight loss quote</h4>
-                                                                    <span><strong>Sussykai</strong></span>
-                                                                    <p>Take great care of your body</p>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </Col>
-                                                </Row>
+                                                */}
+                                                    </Row>
                                             </div>
                                         </Tab.Pane>
                                         <Tab.Pane eventKey="popular">
-                                            
+                                        <div className="related-articles"> 
+                                                <Row>
+                                                    { this.props.communityPopularStories && this.props.communityPopularStories.map(function(story, index){
+
+                                                        const {article_author} = story;
+                                                        const {article_category} = story;
+
+                                                        if (IsAuthenticated) {
+                                                            return (
+                                                                <Col xl={3} lg={4} md={4} sm={6} xs={6} >
+                                                                    <Link to={`/articles/${story.id}`} activeClassName="active">
+                                                                        <div className="related-articles-box">
+                                                                            <div className="image-holder">
+                                                                                
+                                                                                    <img src={story.thumb ? SERVER_URL + "/uploads/" + story.thumb.name : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
+                                                                                
+                                                                            </div>
+                                                                            <div className="text-box">
+                                                                            <h4>{story.title && story.title}</h4>
+                                                                                <span>{article_author && article_author.username}</span>
+                                                                                <p>{story.intro && story.intro}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </Link>
+                                                                </Col>
+                                                            );
+                                                       } else {
+                                                            return (
+                                                                <Col xl={3} lg={4} md={4} sm={6} xs={6} >
+                                                                    <a href="#" data-toggle="modal" data-target="#exampleModal">
+                                                                        <div className="related-articles-box">
+                                                                            <div className="image-holder">                                                
+                                                                                <img src={story.thumb ? SERVER_URL + "/uploads/" + story.thumb.name : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
+                                                                            </div>
+                                                                            <div className="text-box">
+                                                                            <h4>{story.title && story.title}</h4>
+                                                                                <span>{article_author && article_author.username}</span>
+                                                                                <a href="/#login"><p>{story.intro && story.intro}</p></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </a>
+                                                                </Col>
+                                                            );
+                                                       }  
+                                                    })}
+                                                </Row>
+                                            </div>
                                         </Tab.Pane>
     
                                     </Tab.Content> 
@@ -389,16 +206,9 @@ class ArticleLeft extends React.Component {
                         </Tab.Container>   
                     </div>
                 </div>
+     
             
-            {/* ------------ Categories Modal Begin--------------- */}
-            {/*<Button variant="primary" onClick={() => this.setState({modalShow: true})}>
-                Launch vertically centered modal
-                </Button>*/}  
-            <CategoryModal
-                show={this.state.modalShow}
-                onHide={() => this.setState({modalShow: false})}
-            />
-            {/*--------------Categories Modal End---------------- */}
+           
             </div>    
         </div>
       )
@@ -416,10 +226,16 @@ ArticleLeft.propTypes = {
 function mapStateToProps(state){
     const { categories } = state.articles;
     const { articles } = state.articles;
+    const { communityRecentStories } = state.articles;
+    const { communityPopularStories } = state.articles;
+    const { auth } = state;
 
     return { 
         categories: categories,
-        articles: articles
+        articles: articles,
+        communityRecentStories: communityRecentStories,
+        communityPopularStories: communityPopularStories, 
+        auth: auth
     };
 }
 export default connect(mapStateToProps)(ArticleLeft)

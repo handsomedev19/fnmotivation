@@ -4,12 +4,19 @@ import { POST_STORY_SUCCESS } from "../actions/articles";
 import { POST_STORY_FAILURE } from "../actions/articles";
 import { GET_ARTICLE_TAGS } from  "../actions/articles";
 import { SET_ARTICLE_TAGS } from "../actions/articles";
+import { GET_COMMUNITY_RECENT_STORIES_SUCCESS } from "../actions/articles";
+import { GET_COMMUNITY_POPULAR_STORIES_SUCCESS } from "../actions/articles";
+import { GET_ONEARTICLE_SUCCESS } from "../actions/articles";
+import { GET_ONEARTICLE_FAILURE } from "../actions/articles";
 
 const initialState = {
     categories: null,
     articles: null,
     meessage: null,
-    tags: []
+    tags: [],
+    communityRecentStories: null,
+    communityPopularStories: null,
+    oneArticle: {},
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -47,6 +54,24 @@ export default function articles (state = initialState, action = {}) {
             return {
                 ...state,
                 tags: action.payload
+            }
+
+        case GET_COMMUNITY_RECENT_STORIES_SUCCESS:
+            return {
+                ...state,
+                communityRecentStories: action.payload
+            }
+        
+        case GET_COMMUNITY_POPULAR_STORIES_SUCCESS:
+            return {
+                ...state,
+                communityPopularStories: action.payload
+            }
+        
+        case GET_ONEARTICLE_SUCCESS:
+            return {
+                ...state,
+                oneArticle: action.payload
             }
 
 
