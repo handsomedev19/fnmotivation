@@ -8,7 +8,11 @@ import {
   removeIdToken,
   decodeUserProfile,
   removeIdUser,
-  setIdUser
+  setIdUser,
+  setIdId,
+  removeIdId,
+  setIdAvatar,
+  removeIdAvatar
 } from "../utils/apiUtils";
 import { alert } from "./alerts";
 
@@ -37,6 +41,13 @@ function loginSuccess(payload) {
 
   setIdToken(jwt);
   setIdUser(user.username);
+  setIdId(user.id);
+  if (user.avatar != null){
+    setIdAvatar(user.avatar);
+  }
+
+  console.log("user information:");
+  console.log(payload);
 
   console.log("loggin user: " + user.username);
   console.log("loggin user role: " + role.id);
@@ -46,7 +57,9 @@ function loginSuccess(payload) {
     type: LOGIN_SUCCESS,
     user: user.username,
     role: role.id,
-    token: jwt
+    token: jwt,
+    id: user.id,
+    avatar: user.avatar
   };
 }
 
@@ -84,6 +97,8 @@ function logoutRequest(user) {
 function logoutSuccess(payload) {
   removeIdToken();
   removeIdUser();
+  removeIdId();
+  removeIdAvatar();
   return {
     type: LOGOUT_SUCCESS,
     user: payload.user

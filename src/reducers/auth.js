@@ -7,7 +7,7 @@ import {
   LOGOUT_FAILURE
 } from "../actions/auth";
 
-import { loadUserProfile, loadIdToken, loadIdUser } from "../utils/apiUtils";
+import { loadUserProfile, loadIdToken, loadIdUser, loadIdId, loadIdAvatar } from "../utils/apiUtils";
 
 const initialState = {
   user: loadIdUser(),
@@ -16,7 +16,9 @@ const initialState = {
   loggingIn: false,
   loggingOut: false,
   loginError: null,
-  token: loadIdToken()
+  token: loadIdToken(),
+  id: loadIdId(),
+  avatar: loadIdAvatar()
 };
 
 function initializeState() {
@@ -33,7 +35,9 @@ export default function auth(state = initializeState(), action = {}) {
         loggingIn: false,
         user: action.user,
         userRole: action.role,
-        token: action.token
+        token: action.token,
+        id: action.id,
+        avatar: action.avatar
       });
     case LOGIN_FAILURE:
       return {
@@ -55,7 +59,9 @@ export default function auth(state = initializeState(), action = {}) {
         user: null,
         userRole: null,
         loginError: null,
-        token: null
+        token: null,
+        id: null,
+        avatar: null
       };
     case LOGOUT_FAILURE:
       return {

@@ -58,9 +58,9 @@ class Header extends Component {
                                       <Navbar.Collapse id="basic-navbar-nav">
                                       <Nav className="">
                                           <div className="nav-item"><Nav.Link href="/">Home</Nav.Link></div>
-                                          <div className="nav-item"><Nav.Link href="/#post-story">Post Story</Nav.Link></div>
-                                          <div className="nav-item"><Nav.Link href="/#post-new-article">Post New Article</Nav.Link></div>
-                                          <div className="nav-item"><Nav.Link href="/#communities">Communities</Nav.Link></div>
+                                          <div className="nav-item"><Nav.Link href="/post-story">Post Story</Nav.Link></div>
+                                          <div className="nav-item"><Nav.Link href="/post-new-article">Post New Article</Nav.Link></div>
+                                          <div className="nav-item"><Nav.Link href="/communities">Communities</Nav.Link></div>
                                       </Nav>
                                       </Navbar.Collapse>
                                   </Navbar>
@@ -76,10 +76,10 @@ class Header extends Component {
                                       
                                       <ul className="acount-btn">
                                           { isAuthenticated ?
-                                          <UserProfile user={user} handleLogout={this.onLogoutClick} /> :
+                                          <UserProfile auth={auth} handleLogout={this.onLogoutClick} /> :
                                           <>
-                                            <li className={isLoginPage ? 'login-btn' : ''}><a href="/#login">Login</a></li>
-                                            <li  className={isSignupPage ? 'login-btn' : ''}><a href="/#signup">Sign Up</a></li>
+                                            <li className={isLoginPage ? 'login-btn' : ''}><a href="/login">Login</a></li>
+                                            <li  className={isSignupPage ? 'login-btn' : ''}><a href="/signup">Sign Up</a></li>
                                           </>
                                       }
                                       </ul> 
@@ -98,7 +98,7 @@ class Header extends Component {
                                               </form>
                                               <ul className="acount-btn">
                                                   { isAuthenticated ?
-                                                  <UserProfile user={user} handleLogout={this.onLogoutClick} /> :
+                                                  <UserProfile auth={auth} handleLogout={this.onLogoutClick} /> :
                                                   <li>
                                                       <div className="use-profile"> 
                                                           <div className="text-box">

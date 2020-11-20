@@ -24,7 +24,7 @@ class Alert extends React.Component {
                 borderColor: "#c3e6cb",
                 color: "#155724"
             }}>
-                <Toast onClose={() => this.props.dispatch(hideAlert())} show={this.props.showAlert} delay={3000} autohide>
+                <Toast onClose={() => this.props.dispatch(hideAlert())} show={this.props.showAlert} delay={3000} style={{width: "600px!important"}} autohide>
                     {/*<Toast.Header>
                         <img
                         src="holder.js/20x20?text=%20"

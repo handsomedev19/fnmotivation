@@ -84,8 +84,17 @@ export function callApi(
 
 export const ID_TOKEN = "id_token";
 export const ID_USER = "id_user";
-//export const SERVER_URL = "http://localhost:1337";
-export const SERVER_URL = "http://fnmotivation.com:1337";
+export const ID_ID = "id_id";
+export const ID_AVATAR = "id_avatar";
+
+export const SERVER_URL = "http://localhost:1337";
+//export const SERVER_URL = "http://fnmotivation.com:1337";
+
+export const DEFAULT_USER_AVATAR = SERVER_URL + "/uploads/avatar/user-icon.png";
+export const AVATAR_URL = SERVER_URL + "/uploads/";
+export const NOTIFICATION_URL = SERVER_URL + "/uploads/assets/notification-icon.svg";
+export const ARTICLE_THUMB_URL = SERVER_URL + "/uploads/";
+export const ARTICLE_CATEGORY_THUMB_URL = SERVER_URL + "/uploads/";
 
 export function setIdToken(idToken) {
   localStorage.setItem(ID_TOKEN, idToken);
@@ -99,6 +108,7 @@ export function loadIdToken() {
   return localStorage.getItem(ID_TOKEN);
 }
 
+
 export function setIdUser(idUser) {
   localStorage.setItem(ID_USER, idUser);
 }
@@ -110,6 +120,33 @@ export function removeIdUser() {
 export function loadIdUser() {
   return localStorage.getItem(ID_USER);
 }
+
+
+export function setIdId(idId) {
+  localStorage.setItem(ID_ID, idId);
+}
+
+export function removeIdId() {
+  localStorage.removeItem(ID_ID);
+}
+
+export function loadIdId() {
+  return localStorage.getItem(ID_ID);
+}
+
+
+export function setIdAvatar(idAvatar) {
+  localStorage.setItem(ID_AVATAR, idAvatar);
+}
+
+export function removeIdAvatar() {
+  localStorage.removeItem(ID_AVATAR);
+}
+
+export function loadIdAvatar() {
+  return localStorage.getItem(ID_AVATAR);
+}
+
 
 export function decodeUserProfile(idToken) {
   try {

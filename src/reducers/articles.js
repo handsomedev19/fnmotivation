@@ -1,4 +1,4 @@
-import { GET_CATEGORIES_SUCCESS } from "../actions/articles";
+import { GET_CATEGORIES_SUCCESS, POST_COMMENT_SUCCESS, POST_THUMB_UP_SUCCESS } from "../actions/articles";
 import { GET_ARTICLES_SUCCESS } from "../actions/articles";
 import { POST_STORY_SUCCESS } from "../actions/articles";
 import { POST_STORY_FAILURE } from "../actions/articles";
@@ -8,6 +8,11 @@ import { GET_COMMUNITY_RECENT_STORIES_SUCCESS } from "../actions/articles";
 import { GET_COMMUNITY_POPULAR_STORIES_SUCCESS } from "../actions/articles";
 import { GET_ONEARTICLE_SUCCESS } from "../actions/articles";
 import { GET_ONEARTICLE_FAILURE } from "../actions/articles";
+import { POST_COMMENT_REPLY_SUCCESS } from "../actions/articles";
+import { POST_COMMENT_REPLY_FAILURE } from "../actions/articles";
+import { GET_COMMENTS_SUCCESS } from "../actions/articles";
+import { GET_RELATED_ARTICLES_SUCCESS } from "../actions/articles";
+
 
 const initialState = {
     categories: null,
@@ -17,6 +22,9 @@ const initialState = {
     communityRecentStories: null,
     communityPopularStories: null,
     oneArticle: {},
+    comments: {},
+    commentReplies: {},
+    relatedArticles: null
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -69,6 +77,36 @@ export default function articles (state = initialState, action = {}) {
             }
         
         case GET_ONEARTICLE_SUCCESS:
+            return {
+                ...state,
+                oneArticle: action.payload
+            }
+
+        case POST_COMMENT_SUCCESS:
+            return {
+                ...state,
+                comments: [...state.comments, action.payload]
+            }
+        
+        case POST_COMMENT_REPLY_SUCCESS:
+            return {
+                ...state,
+                commentReplies: action.payload
+            }
+
+        case GET_COMMENTS_SUCCESS:
+            return {
+                ...state,
+                comments: action.payload
+            }
+
+        case GET_RELATED_ARTICLES_SUCCESS:
+            return {
+                ...state,
+                relatedArticles: action.payload
+            }
+
+        case POST_THUMB_UP_SUCCESS:
             return {
                 ...state,
                 oneArticle: action.payload

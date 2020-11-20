@@ -1,5 +1,6 @@
 import React from 'react'
-import {Container, Row} from "react-bootstrap";
+import {Container, Row, Collapse} from "react-bootstrap";
+import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
 import {getOneArticle} from "../../actions/articles";
@@ -11,7 +12,12 @@ import ThumbUpHoverIcon from "../../images/thumb-up-hover.svg";
 import BookMarkIcon from "../../images/bookmark-icon.svg";
 import BookMarkHoverIcon from "../../images/bookmark-hover.svg";
 import { SERVER_URL } from '../../utils/apiUtils';
-import { postComment } from "../../actions/articles"
+import { postComment } from "../../actions/articles";
+import { postCommentReply } from "../../actions/articles";
+import { getComments } from "../../actions/articles";
+import { getRelatedArticles } from "../../actions/articles";
+import { postThumbUp } from "../../actions/articles";
+import { DEFAULT_USER_AVATAR, AVATAR_URL, ARTICLE_THUMB_URL, ARTICLE_CATEGORY_THUMB_URL } from "../../utils/apiUtils";
 
 class ArticleContainer extends React.Component {
 
@@ -19,21 +25,36 @@ class ArticleContainer extends React.Component {
         super(props);
 
         this.state = {
-            comment: ""
+            comment: "", 
+            replyOpen: false,
+            collapseIdentifier: "",
+            replyContent: ""
         }
 
         this.handleCommentChange = this.handleCommentChange.bind(this);
         this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
+        this.handleReplyToggle = this.handleReplyToggle.bind(this);
+        this.handleReplyChange = this.handleReplyChange.bind(this);
+        this.handleReplySubmit = this.handleReplySubmit.bind(this);
+        this.handleThumbUpClick = this.handleThumbUpClick.bind(this);
     }
     //this.props.match.params.articleId
 
-    componentWillMount(){
+    componentDidMount(){
         const articleId = this.props.match.params.articleId;
         //console.log("Article Id: " + articleId);
 
         this.props.dispatch(getOneArticle(articleId));
+        this.props.dispatch(getComments(articleId));
         
     }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.match.params.articleId !== this.props.match.params.articleId){
+            this.props.dispatch(getOneArticle(this.props.match.params.articleId));
+            this.props.dispatch(getComments(this.props.match.params.articleId));
+        }
+      }
 
     handleCommentChange(event) {    
         const { name, value } = event.target;
@@ -62,16 +83,73 @@ class ArticleContainer extends React.Component {
 
     }
 
+    handleReplyToggle(event) {
+        event.preventDefault();
+        const {name} = event.target;
+        //console.log(name);
+        this.setState({collapseIdentifier: name});
+        this.setState({replyOpen: !this.state.replyOpen})
+    }
 
-    render(){       
+    handleReplyChange(event) {
+
+
+        const {name, value} = event.target;
+
+        this.setState({ replyContent: value });
+        console.log(this.state.replyContent);
+
+    }
+
+    handleReplySubmit(event){
+        event.preventDefault();
+
+        const {name} = event.target;
+        let result = name.split(";");
+        const users_permissions_user = !!result[0] ? result[0] : 0;
+        const comment = !!result[1] ? result[1] : 0; 
+
+        console.log(users_permissions_user);
+        console.log(comment);
+
+        const config = {
+            users_permissions_user: this.props.auth.id,
+            comment: comment, 
+            content: this.state.replyContent
+        }
+
+        this.props.dispatch(postCommentReply(config));
+
+    }
+
+    handleThumbUpClick(event){
+        event.preventDefault();
+
+        let user = this.props.auth; if(user == null) { user = {}; }       
         let article = this.props.oneArticle; if (article == null) { article = {}; }
         let category = article.article_category; if (category == null) {category = {};}
         let author = article.article_author; if (author == null) {author = {};}
-        let comments = article.comments; if(comments == null) {comments = {};}
+
+        const articleId = this.props.match.params.articleId;
+        let likes = this.props.oneArticle.likes;
+        if (likes == null) {likes = 0;}
+
+        this.props.dispatch(postThumbUp(articleId, likes));
+    }
+
+
+    render(){
+        let user = this.props.auth; if(user == null) { user = {}; }       
+        let article = this.props.oneArticle; if (article == null) { article = {}; }
+        let category = article.article_category; if (category == null) {category = {};}
+        let author = article.article_author; if (author == null) {author = {};}
+        let comments = this.props.comments; if(comments == null) {comments = {};}
+        let relatedArticles = this.props.relatedArticles; if (relatedArticles == null) {relatedArticles = {};}
 
         //console.log("article container render:");
         //console.log(article);
         
+        const that = this;
 
         return(
             <section className="article-sec">
@@ -81,8 +159,8 @@ class ArticleContainer extends React.Component {
                             <div className="article-left">
                                 <div className="breadcrumb-main">
                                     <ol className="breadcrumb">
-                                        <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                        <li className="breadcrumb-item"><a href="#">{category.title}</a></li>
+                                        <li className="breadcrumb-item"><a href="/">Home</a></li>
+                                        <li className="breadcrumb-item"><a href="/">{category.title}</a></li>
                                         <li className="breadcrumb-item active">{article.title}</li>
                                     </ol>
                                 </div>
@@ -95,7 +173,12 @@ class ArticleContainer extends React.Component {
                                                 <p>{article.published_at != null ?article.published_at.slice(0, 10) : ''}</p>
                                                 <div className="article-title-user">
                                                     <div className="user-holder">
-                                                        <img src="images/user-img.png" alt="Author Avatar" className="img-fluid" />
+                                                        {
+                                                            this.props.auth.avatar == null ?
+                                                            <img className="img-fluid" src={DEFAULT_USER_AVATAR} alt="avatar1" />
+                                                            :
+                                                            <img className="img-fluid" src={AVATAR_URL + this.props.auth.avatar} alt="avatar2" />
+                                                        }
                                                     </div>
                                                     <div className="text-inner">
                                                         <h3>{author.username}</h3>
@@ -106,7 +189,13 @@ class ArticleContainer extends React.Component {
                                             <div className="article-title-right">
                                                 <ul>
                                                     <li><a href=""><img src={ShareIcon} className="simple-state" alt=""/> <img src={ShareHoverIcon} className="hover-state" alt=""/></a></li>
-                                                    <li className="active"><a href=""><strong>1</strong><img src={ThumbUpIcon} className="simple-state" alt=""/><img src={ThumbUpHoverIcon} className="hover-state" alt=""/></a></li>
+                                                    <li className="active">
+                                                        <a href="" onClick={this.handleThumbUpClick}>
+                                                            <strong>{article.likes}</strong>
+                                                            <img src={ThumbUpIcon} className="simple-state" alt=""/>
+                                                            <img src={ThumbUpHoverIcon} className="hover-state" alt=""/>
+                                                        </a>
+                                                    </li>
                                                     <li><a href=""><img src={BookMarkIcon} className="simple-state" alt=""/><img src={BookMarkHoverIcon} className="hover-state" alt=""/></a></li>
                                                 </ul>
                                             </div>
@@ -144,46 +233,84 @@ class ArticleContainer extends React.Component {
                                     </div>
                                     <div className="article-title-right mobile-version">
                                         <ul>
-                                            <li><a href="#"><img src={ShareIcon} className="simple-state" alt=""/> <img src={ShareHoverIcon} className="hover-state" alt=""/></a></li>
-                                            <li className="active"><a href="#"><strong>1</strong><img src={ThumbUpIcon} className="simple-state" alt=""/><img src={ThumbUpHoverIcon} className="hover-state" alt=""/></a></li>
-                                            <li><a href="#"><img src={BookMarkIcon} className="simple-state" alt=""/><img src={BookMarkHoverIcon} className="hover-state" alt=""/></a></li>
+                                            <li><a href=""><img src={ShareIcon} className="simple-state" alt=""/> <img src={ShareHoverIcon} className="hover-state" alt=""/></a></li>
+                                            <li className="active"><a href=""><strong>1</strong><img src={ThumbUpIcon} className="simple-state" alt=""/><img src={ThumbUpHoverIcon} className="hover-state" alt=""/></a></li>
+                                            <li><a href=""><img src={BookMarkIcon} className="simple-state" alt=""/><img src={BookMarkHoverIcon} className="hover-state" alt=""/></a></li>
                                         </ul>
                                     </div>
                                 </div>
                                 <div className="article-comments">
-                                    <div className="article-comments-write">
-                                        <h3>Comments</h3>
-                                        <textarea className="form-control" name="comment" onChange={this.handleCommentChange} placeholder="Write here...."></textarea>
-                                        <div className="comment-post">
-                                            <a href="" onClick={this.handleCommentSubmit}>Post</a>
-                                            <span>0/500</span>
-                                        </div>
-                                    </div>
-<div>
                                     {
-                                        comments.length > 0 && comments.map(function(comment){
+                                        this.props.auth.id != author.id &&
+                                        <div className="article-comments-write">
+                                            <h3>Comments</h3>
+                                            <textarea className="form-control" name="comment" onChange={this.handleCommentChange} placeholder="Write here...."></textarea>
+                                            <div className="comment-post">
+                                                <a href="" onClick={this.handleCommentSubmit}>Post</a>
+                                                <span>0/500</span>
+                                            </div>
+                                        </div>
+                                    }
+                                     
+                                    {
+                                        
+                                        comments.length > 0 && comments.map(function(comment, index){
                                             return(
+                                                <div>
                                                 <div className="article-comments-reply">
                                                     <div className="image-holder">
-                                                        <img src="images/user-icon.png" alt="avatar" className="img-fluid" />
+                                                        {
+                                                            comment.users_permissions_user.avatar == null ?
+                                                            <img className="img-fluid" src={DEFAULT_USER_AVATAR} alt="avatar1" />
+                                                            :
+                                                            <img className="img-fluid" src={AVATAR_URL + comment.users_permissions_user.avatar} alt="avatar2" />
+                                                        }
                                                     </div>
                                                     <div className="text-box">
-                                                        <h3>{comment.users_permissions_user}</h3>
+                                                        <h3>{comment.users_permissions_user.username}</h3>
                                                         <div className="reply-box">
                                                             <h4>{comment.content}</h4>
                                                             <span>{comment.published_at != null ?comment.published_at.slice(0, 10) : ''}</span>
                                                         </div>
-                                                        <ul>
-                                                            <li><a href="#">Reply</a></li>
-                                                            <li><a href="#">Edit</a></li>
-                                                            <li><a href="#">Report</a></li>
-                                                        </ul>
+                                                        {
+                                                            user.id != comment.users_permissions_user.id &&
+                                                            <ul>
+                                                                <li><a href="" onClick={that.handleReplyToggle} name={"example-collapse-text" + index} aria-controls={"example-collapse-text" + index} aria-expanded={that.state.replyOpen}>Reply</a></li>
+                                                                <li><a href="#">Edit</a></li>
+                                                                <li><a href="#">Report</a></li>
+                                                            </ul>
+                                                        }
+                                                        
+                                                        {
+                                                            user.id == comment.users_permissions_user.id &&
+                                                            <ul>
+                                                                <li><a href="#">Edit</a></li>
+                                                                <li><a href="#">Report</a></li>
+                                                            </ul>
+                                                        }
+
+                                                        <Collapse in={that.state.replyOpen && "example-collapse-text" + index == that.state.collapseIdentifier}>
+                                                            <div id={"example-collapse-text" + index } className="article-comments-write">
+                                                                <h3>Contents</h3>
+                                                                <textarea name={"reply" + index} onChange={that.handleReplyChange} placeholder="Write here...." style={{width: "100%", borderRadius: "6px"}}></textarea>
+                                                                <div className="comment-post">
+                                                                    <a href="" name={comment.users_permissions_user + ";" + comment.id} onClick={that.handleReplySubmit}>Post</a>
+                                                                    <span>0/500</span>
+                                                                </div>
+                                                            </div>
+                                                        </Collapse>
+                                                        
                                                     </div>
+                                                    
                                                 </div>
+                                                
+                                            </div>
                                             );
                                         })
                                     }
-                                    </div>
+
+                                    
+                                   
                                     {/*<div className="article-comments-reply">
                                         <div className="image-holder">
                                             <img src="images/user-icon.png" alt="" className="img-fluid" />
@@ -205,34 +332,33 @@ class ArticleContainer extends React.Component {
                                 <div className="related-articles">
                                     <h3>Related Articles</h3>  
                                     <div className="row">
-                                        <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6">
-                                            <a href="#">
-                                                <div className="related-articles-box">
-                                                    <div className="image-holder">
-                                                        <img src="images/related-articles-img.png" alt="" className="img-fluid" />
+                                        {
+                                            relatedArticles.length > 0 && relatedArticles.map(function(article, index){
+                                                return (
+                                                    <div className={"col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6" + index > 1 ? "d-none d-sm-block" : "" }>
+                                                        <Link to={`/articles/${article.id}`} activeclassname="active">
+                                                            <div className="related-articles-box">
+                                                                <div className="image-holder">
+                                                                    <img src={article.thumb ? ARTICLE_THUMB_URL + article.thumb.name : ARTICLE_CATEGORY_THUMB_URL + article.article_category.thumb} alt="Article Image"  fluid/>
+                                                                </div>
+                                                                <div className="text-box">
+                                                                    <h4>{article.title}</h4>
+                                                                    <span>{article.article_author.username}</span>
+                                                                    <p>{article.body}</p>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
                                                     </div>
-                                                    <div className="text-box">
-                                                        <h4>Weight loss quote</h4>
-                                                        <span>Sussykai</span>
-                                                        <p>Take great care of your body</p>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6">
-                                            <a href="#">
-                                                <div className="related-articles-box">
-                                                    <div className="image-holder">
-                                                        <img src="images/related-articles-img.png" alt="" className="img-fluid" />
-                                                    </div>
-                                                    <div className="text-box">
-                                                        <h4>Weight loss quote</h4>
-                                                        <span>Sussykai</span>
-                                                        <p>Take great care of your body</p>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
+                                                );
+                                            })
+                                        }
+                                        {
+                                            relatedArticles == null &&
+                                            <div className="text-box">
+                                                <h4>No related articles</h4>                                                
+                                            </div>
+                                        }
+                                        {/*
                                         <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 d-none d-sm-block">
                                             <a href="#">
                                                 <div className="related-articles-box">
@@ -246,21 +372,7 @@ class ArticleContainer extends React.Component {
                                                     </div>
                                                 </div>
                                             </a>
-                                        </div>
-                                        <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 d-none d-sm-block">
-                                            <a href="#">
-                                                <div className="related-articles-box">
-                                                    <div className="image-holder">
-                                                        <img src="images/related-articles-img.png" alt="" className="img-fluid" />
-                                                    </div>
-                                                    <div className="text-box">
-                                                        <h4>Weight loss quote</h4>
-                                                        <span>Sussykai</span>
-                                                        <p>Take great care of your body</p>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
+                                        </div> */}                                        
                                     </div> 
                                 </div>           
                             </div>
@@ -280,10 +392,14 @@ function mapStateToProps(state){
     
     const oneArticle = state.articles.oneArticle;
     const {auth} = state;
+    const {comments} = state.articles;
+    const {relatedArticles} = state.articles;
     
     return { 
         oneArticle,
-        auth
+        auth,
+        comments,
+        relatedArticles
      };
 }
 export default connect(mapStateToProps)(ArticleContainer)
