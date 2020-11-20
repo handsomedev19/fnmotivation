@@ -87,8 +87,8 @@ export const ID_USER = "id_user";
 export const ID_ID = "id_id";
 export const ID_AVATAR = "id_avatar";
 
-export const SERVER_URL = "http://localhost:1337";
-//export const SERVER_URL = "http://fnmotivation.com:1337";
+//export const SERVER_URL = "http://localhost:1337";
+export const SERVER_URL = "http://fnmotivation.com:1337";
 
 export const DEFAULT_USER_AVATAR = SERVER_URL + "/uploads/avatar/user-icon.png";
 export const AVATAR_URL = SERVER_URL + "/uploads/";
