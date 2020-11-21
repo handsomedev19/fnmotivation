@@ -1,7 +1,6 @@
 import axios from "axios";
 import { SERVER_URL } from "../utils/apiUtils"
 import { alert } from "../actions/alerts"
-import {getLinkPreview} from 'link-preview-js';
 
 export const GET_CATEGORIES_SUCCESS = "get_categories_success";
 export const GET_CATEGORIES_FAILURE = "get_categories_failure";
@@ -29,8 +28,14 @@ export const SUBSCRIBE_MODAL_SHOW = "subscribe_modal_show";
 export const SUBSCRIBE_MODAL_HIDE = "subscribe_modal_hide";
 export const SUBSCRIBE_SUCCESS = "subscribe_success";
 export const SUBSCRIBE_FAILURE = "subscribe_failure";
+export const GET_SUBSCRIBE_ITEMS_SUCCESS = "get_subscribe_items_success";
+export const GET_SUBSCRIBE_ITEMS_FAILURE = "get_subscribe_items_failure";
 export const GET_SUBSCRIBE_RECENT_ARTICLE_SUCCESS = "get_subscribe_recent_article_success";
 export const GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS = "get_subscribe_popular_article_success"; 
+export const GET_LINK_PREVIEW_SUCCESS = "get_link_article_success";
+export const GET_LINK_PREVIEW_FAILURE = "get_link_article_failure";
+export const POST_NEWS_ARTICLE_SUCCESS = "post_news_article_success";
+export const POST_NEWS_ARTICLE_FAILURE = "post_news_article_failure";
 
 
 function getCategoriesSuccess(payload){
@@ -184,6 +189,13 @@ function subscribeFailure(){
     }
 }
 
+function getSubscribeItemsSuccess(payload){
+    return {
+        type: GET_SUBSCRIBE_ITEMS_SUCCESS,
+        payload
+    }
+}
+
 function getSubscribeRecentArticleSuccess(payload){
     return {
         type: GET_SUBSCRIBE_RECENT_ARTICLE_SUCCESS,
@@ -195,6 +207,32 @@ function getSubscribePopularArticleSuccess(payload){
     return {
         type: GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS,
         payload
+    }
+}
+
+function getLinkPreviewSuccess(payload){
+    return {
+        type: GET_LINK_PREVIEW_SUCCESS,
+        payload
+    }
+}
+
+function getLinkPreviewFailure(){
+    return {
+        type: GET_LINK_PREVIEW_FAILURE
+    }
+}
+
+function postNewsArticleSuccess(payload){
+    return {
+        type: POST_NEWS_ARTICLE_SUCCESS,
+        payload
+    }
+}
+
+function postNewsArticleFailure(){
+    return {
+        type: POST_NEWS_ARTICLE_FAILURE
     }
 }
 
@@ -220,11 +258,11 @@ export function getArticles() {
 
     return dispatch => {
         axios
-        .get(SERVER_URL + "/articles?_limit=5")
+        .get(SERVER_URL + "/articles?_limit=5&_where[0][outer]=true")
         .then(response => {
             // Handle success.
             //console.log("Articles:");
-            //console.log(response.data);
+            console.log(response.data);
             dispatch(getArticlesSucces(response.data));          
         })
         .catch(error => {
@@ -725,8 +763,81 @@ export function getLinkPreview1(url){
     return dispatch => {
 
         console.log("url : " + url);
+
+        let config = {url : url};
+
+        axios                
+        .post(SERVER_URL + '/get-link-previews', config)
+        .then(response => {
+            // Handle success.
+            console.log("Get Link Preview Comment Success!");
+            console.log(response.data);
+    
+            dispatch(alert("Link successfully."));
         
-        getLinkPreview('https://www.lennyletter.com/story/nineteen-metaphors-for-your-depressio')
-        .then((data) => console.log(data));
+            const data = {
+                title: !!response.data.title ? response.data.title : "",
+                image: !!response.data.image ? response.data.image : "",
+                description: !!response.data.description ? response.data.description : "",
+                link: !!response.data.link ? response.data.link : "",
+                isLinked: true
+            }
+
+            dispatch(getLinkPreviewSuccess(data));
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+      
+            //dispatch(loginFailure(error));
+            dispatch(alert("Link Failed, Please Try Again"));
+        });
+    }
+}
+
+export function postNewsArticle(config){
+    return dispatch => {
+        console.log(config);
+
+        axios                
+        .post(SERVER_URL + '/articles', config)
+        .then(response => {
+            // Handle success.
+            console.log("Post News Article Success!");
+            console.log(response.data);
+
+            //dispatch(postArticleSuccess());
+            dispatch(alert("Submitted successfully."));
+            dispatch(postNewsArticleSuccess(response.data));
+           
+            
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('Post News Article, An error occurred:', error.response);
+      
+            dispatch(alert("Submit Failed, Please Try Again"));
+            
+        });
+    }
+}
+
+export function getSubscribeItems(userId){
+    return dispatch => {
+
+        console.log(userId);
+        axios
+        .get(SERVER_URL + "/subscribe-categories?_where[0][user_id]=" + userId)
+        .then(response => {
+            // Handle success.
+            console.log("get Subscribe Items:");
+            console.log(response.data);
+            dispatch(getSubscribeItemsSuccess(response.data));          
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+            dispatch(alert("Some errors found"));
+        });
     }
 }

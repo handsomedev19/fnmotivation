@@ -16,7 +16,10 @@ import { SUBSCRIBE_MODAL_SHOW } from "../actions/articles";
 import { SUBSCRIBE_MODAL_HIDE } from "../actions/articles";
 import { GET_SUBSCRIBE_RECENT_ARTICLE_SUCCESS } from "../actions/articles";
 import { GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS } from "../actions/articles";
-
+import { GET_LINK_PREVIEW_SUCCESS } from "../actions/articles";
+import { GET_LINK_PREVIEW_FAILURE } from "../actions/articles";
+import { POST_NEWS_ARTICLE_SUCCESS } from "../actions/articles";
+import { GET_SUBSCRIBE_ITEMS_SUCCESS} from "../actions/articles";
 
 const initialState = {
     categories: null,
@@ -31,7 +34,15 @@ const initialState = {
     relatedArticles: null,
     subModalShow: false,
     subscribeRecentStories: null,
-    subscribePopularStories: null
+    subscribePopularStories: null,
+    linkPreviewData: {
+        title: null,
+        image: null,
+        link: null,
+        description: null,
+        isLinked: false
+    },
+    subscribeItems: {}
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -141,6 +152,36 @@ export default function articles (state = initialState, action = {}) {
             return {
                 ...state,
                 subscribePopularStories: action.payload
+            }
+
+        case GET_LINK_PREVIEW_SUCCESS:
+            return {
+                ...state,
+                linkPreviewData : Object.assign({}, state.linkPreviewData, action.payload)
+            }
+
+        case GET_LINK_PREVIEW_FAILURE:
+            return {
+                ...state,
+                linkPreviewData: {title: null, image: null, link: null, description: null, isLinked: false}
+            }
+
+        case POST_NEWS_ARTICLE_SUCCESS:
+            return {
+                ...state,
+                linkPreviewData : {
+                    title: null,
+                    image: null,
+                    link: null,
+                    description: null,
+                    isLinked: false
+                }
+            }
+
+        case GET_SUBSCRIBE_ITEMS_SUCCESS:
+            return {
+                ...state,
+                subscribeItems: action.payload
             }
 
 

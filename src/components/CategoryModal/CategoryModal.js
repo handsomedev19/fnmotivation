@@ -6,6 +6,21 @@ import { connect } from 'react-redux'
 import PropTypes from "prop-types";
 import { SERVER_URL } from "../../utils/apiUtils"
 import { subModalHide, subscribe } from "../../actions/articles";
+import {getSubscribeItems} from "../../actions/articles";
+
+function getSubArray(array){
+
+    let subArray = [];
+    let n = array.length;
+    for(let i = 0; i < n; i++){
+        let item = array[i];
+        subArray.push(parseInt(item.category_id));
+    }
+
+    return subArray;
+
+}
+
 
 class CategoryModal extends React.Component {
 
@@ -15,11 +30,16 @@ class CategoryModal extends React.Component {
         this.state = {
             selectCategoryIdentifier: null,
             selectCategoryToggle: false,
-            selectedCategories: []
+            selectedCategories: this.props.subscribeItems || []
         }
 
         this.handleImgClick = this.handleImgClick.bind(this);
         this.handleSubscribeClick = this.handleSubscribeClick.bind(this);
+    }
+
+    componentDidMount(){
+        //this.props.dispatch(getSubscribeItems(this.props.auth.id));
+        //this.setState({selectedCategories: this.props.subscribeItems});
     }
 
     handleImgClick(event) {
@@ -45,7 +65,9 @@ class CategoryModal extends React.Component {
         event.preventDefault();
         console.log(this.props.auth.id);
         console.log(this.state.selectedCategories);
-        this.props.dispatch(subscribe(this.props.auth.id, this.state.selectedCategories));
+        if (this.state.selectedCategories.length > 0) {
+            this.props.dispatch(subscribe(this.props.auth.id, this.state.selectedCategories));
+        }
         this.props.dispatch(subModalHide());
     }
 
@@ -108,10 +130,12 @@ function mapStateToProps(state){
     const {articles} = state;
     const { categories } = articles;
     const {auth} = state;
+    //const {subscribeItems} = state.articles || {};
 
     return { 
         categories: categories,
-        auth
+        auth,
+        //subscribeItems
     };
 }
 export default connect(mapStateToProps)(CategoryModal)

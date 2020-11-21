@@ -4,14 +4,20 @@ import {connect} from "react-redux";
 import {subModalShow} from "../../actions/articles";
 import {subModalHide} from "../../actions/articles";
 
+
 class StayConnect extends React.Component {
 
     constructor(props){
         super(props);
 
         this.state = {
-            modalShow: false
+            modalShow: false,
+            subCategories: []
         };
+    }
+
+    componentDidMount(){
+       
     }
 
     render() {
@@ -44,7 +50,7 @@ function mapStateToProps(state) {
     const {auth} = state;
     const {subModalShow} = state.articles;
 
-    return { auth, subModalShow }
+    return { auth, subModalShow}
 }
 
 export default connect(mapStateToProps)(StayConnect)
