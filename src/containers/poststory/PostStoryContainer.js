@@ -86,8 +86,8 @@ class PostStoryContainer extends React.Component {
                 } else {
                     //console.log("In case of alt image");
                     //console.log(data["article_category"]);
-                    const tempdata = this.props.categories.filter(category => category.id == data["article_category"])[0];
-                    data["thumb"] = tempdata.thumb;
+                    //const tempdata = this.props.categories.filter(category => category.id == data["article_category"])[0];
+                    //data["thumb"] = tempdata.thumb;
                     //console.log("alt image url: ");
                     //console.log(data["thumb"]);
                 }

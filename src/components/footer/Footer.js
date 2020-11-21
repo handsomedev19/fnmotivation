@@ -6,6 +6,8 @@ import FacebookImg from '../../images/facebook-icon.svg'
 
 const Footer = () => {
 
+    let url = window.location.href;
+
   return (
     <div>
         <footer className="footer">
@@ -31,9 +33,9 @@ const Footer = () => {
                         <div className="col-md-4">
                             <div className="footer-social">
                                 <ul>
-                                    <li><a href="#"><img src={TwitterImg} alt="" /></a></li>
-                                    <li><a href="#"><img src={LinkdinImg} alt="" /></a></li>
-                                    <li><a href="#"><img src={FacebookImg} alt="" /></a></li>
+                                    <li><a href="https://twitter.com/"><img src={TwitterImg} alt="" /></a></li>
+                                    <li><a href="https://www.linkedin.com/"><img src={LinkdinImg} alt="" /></a></li>
+                                    <li><a href="https://www.facebook.com/ "><img src={FacebookImg} alt="" /></a></li>
                                 </ul>
                             </div>
                         </div>

@@ -59,7 +59,7 @@ class Header extends Component {
                                       <Nav className="">
                                           <div className="nav-item"><Nav.Link href="/">Home</Nav.Link></div>
                                           <div className="nav-item"><Nav.Link href="/post-story">Post Story</Nav.Link></div>
-                                          <div className="nav-item"><Nav.Link href="/post-new-article">Post New Article</Nav.Link></div>
+                                          <div className="nav-item"><Nav.Link href="/post-new-article">Post News Article</Nav.Link></div>
                                           <div className="nav-item"><Nav.Link href="/communities">Communities</Nav.Link></div>
                                       </Nav>
                                       </Navbar.Collapse>

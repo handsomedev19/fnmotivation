@@ -1,6 +1,7 @@
 import axios from "axios";
 import { SERVER_URL } from "../utils/apiUtils"
 import { alert } from "../actions/alerts"
+import {getLinkPreview} from 'link-preview-js';
 
 export const GET_CATEGORIES_SUCCESS = "get_categories_success";
 export const GET_CATEGORIES_FAILURE = "get_categories_failure";
@@ -24,6 +25,12 @@ export const GET_RELATED_ARTICLES_SUCCESS = "get_related_articles_success";
 export const GET_RELATED_ARTICLES_FAILURE = "get_related_articles_failure";
 export const POST_THUMB_UP_SUCCESS = "post_thumb_up_success";
 export const POST_THUMB_UP_FAILURE = "post_thumb_up_failure";
+export const SUBSCRIBE_MODAL_SHOW = "subscribe_modal_show";
+export const SUBSCRIBE_MODAL_HIDE = "subscribe_modal_hide";
+export const SUBSCRIBE_SUCCESS = "subscribe_success";
+export const SUBSCRIBE_FAILURE = "subscribe_failure";
+export const GET_SUBSCRIBE_RECENT_ARTICLE_SUCCESS = "get_subscribe_recent_article_success";
+export const GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS = "get_subscribe_popular_article_success"; 
 
 
 function getCategoriesSuccess(payload){
@@ -150,6 +157,44 @@ function postThumbUpSuccess(payload){
     return {
         type: POST_THUMB_UP_SUCCESS,
         payload: payload
+    }
+}
+
+function subModalShowSuccess(){
+    return{
+        type: SUBSCRIBE_MODAL_SHOW
+    }
+}
+
+function subModalHideSuccess(){
+    return {
+        type: SUBSCRIBE_MODAL_HIDE
+    }
+}
+
+function subscribeSuccess(){
+    return {
+        type: SUBSCRIBE_SUCCESS
+    }
+}
+
+function subscribeFailure(){
+    return {
+        type: SUBSCRIBE_FAILURE
+    }
+}
+
+function getSubscribeRecentArticleSuccess(payload){
+    return {
+        type: GET_SUBSCRIBE_RECENT_ARTICLE_SUCCESS,
+        payload
+    }
+}
+
+function getSubscribePopularArticleSuccess(payload){
+    return {
+        type: GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS,
+        payload
     }
 }
 
@@ -331,8 +376,9 @@ export function postComment(config){
             console.log(response.data);
 
             //dispatch(postArticleSuccess());
-            dispatch(alert("Comment created was posted successfully."));
+            dispatch(alert("Subscribed successfully."));
             dispatch(postCommentSuccess(response.data));
+           
             
         })
         .catch(error => {
@@ -340,8 +386,8 @@ export function postComment(config){
             //console.log('An error occurred:', error.response);
       
             //dispatch(loginFailure(error));
-            dispatch(alert("Post Failed, Please Try Again"));
-    
+            dispatch(alert("Subscribe Failed, Please Try Again"));
+            
         });
     }
 }
@@ -424,33 +470,263 @@ export function getRelatedArticles(id){
     }
 }
 
-export function postThumbUp(id, likes){
+export function postThumbUp(id, likes, userId){
     return dispatch => {
 
         console.log("article_id : " + id);
         console.log(SERVER_URL + "/articles/" + id);
 
         const config = {likes:  parseInt(likes) + 1}
-        
+
         axios                
-        .put(SERVER_URL + '/articles/' + id, config)
+        .post(SERVER_URL + '/article-likes', {article_id: parseInt(id), user_id: parseInt(userId)})
         .then(response => {
             // Handle success.
-            //console.log("Post Comment Success!");
-            //console.log(response.data);
+            console.log("Post Article Like Success!");
+            console.log(response.data); 
 
-            //dispatch(postArticleSuccess());
-            dispatch(alert("Request created was posted successfully."));
-            dispatch(postThumbUpSuccess(response.data));
+            axios                
+                .put(SERVER_URL + '/articles/' + id, config)
+                .then(response => {
+                    // Handle success.
+                    //console.log("Post Comment Success!");
+                    //console.log(response.data);
+
+                    //dispatch(postArticleSuccess());
+                    dispatch(alert("Request created was posted successfully."));
+                    dispatch(postThumbUpSuccess(response.data));
+                    
+                })
+                .catch(error => {
+                    // Handle error.
+                    //console.log('An error occurred:', error.response);
+            
+                    //dispatch(loginFailure(error));
+                    dispatch(alert("Request Was Failed, Please Try Again"));
+            
+                });          
             
         })
         .catch(error => {
             // Handle error.
-            //console.log('An error occurred:', error.response);
-      
-            //dispatch(loginFailure(error));
-            dispatch(alert("Request Was Failed, Please Try Again"));
+            console.log('Post Article Like An error occurred:', error.response);
+            return;
+        });      
+    }
+}
+
+export function checkThumbUp(articleId, userId){
+
+    console.log("checkThumbUp: " + articleId, userId);
+
+    let articleId1 = parseInt(articleId);
+    let userId1 = parseInt(userId);
     
+    axios
+        .get(SERVER_URL + "/article-likes?_where[0][article_id]=" + articleId1 + "&_where[1][user_id]=" + userId1)
+        .then(response => {
+            // Handle success.
+            console.log("Article Like Response:");
+            console.log(response.data);
+
+            if (response.data.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('Article Like Response, An error occurred:', error.response);
+            return false;
         });
+}
+
+export function subModalShow(){
+    return dispatch => {
+        dispatch(subModalShowSuccess());
+    }
+}
+
+export function subModalHide(){
+    return dispatch => {
+        dispatch(subModalHideSuccess());
+    }
+}
+
+export function subscribe(userId, categoryIds){
+    return dispatch => {
+
+            console.log(userId);
+            console.log(categoryIds);
+            const config = {
+                user_id: userId,
+                category_ids: categoryIds
+            }
+
+            axios                
+            .post(SERVER_URL + '/subscribe-categories-multiple', config)
+            .then(response => {
+                // Handle success.
+                console.log("Post Comment Success!");
+                console.log(response.data);
+    
+                //dispatch(postArticleSuccess());
+                dispatch(alert("Comment created was posted successfully."));
+                //dispatch(postCommentSuccess(response.data));
+                
+            })
+            .catch(error => {
+                // Handle error.
+                //console.log('An error occurred:', error.response);
+          
+                //dispatch(loginFailure(error));
+                dispatch(alert("Post Failed, Please Try Again"));
+        
+            });
+    }
+}
+
+export function getSubscribeRecentArticle(userId){
+    return dispatch => {
+
+        axios
+        .get(SERVER_URL + "/subscribe-categories?_where[0][user_id]=" + userId)
+        .then(response => {
+            // Handle success.
+            //console.log("Subscribe Categories responsive arrived:")
+            //console.log(response.data);
+            const categories = response.data;
+            let n = categories ? categories.length : 0;
+            let param = "";
+            
+            if (n > 0) {
+                let n1 = Math.floor(parseInt(16/parseInt(n)));
+                //console.log("step1 : " +  n1);
+
+                let n2 = 16 - n1 * n;
+                //console.log("step2: " + n2);
+                
+                /*for (let i = 0; i < n; i++){
+                    if (i == 0) {
+                        param = param + "?article_category_in=" + categories[i].category_id;
+                    } else {
+                        param = param + "&article_category_in=" + categories[i].category_id;
+                    }
+                    
+                }*/
+
+                for (let i = 0; i < n; i++){
+                    if (i == 0) {
+                        param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
+                    } else {
+                        param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
+                    }
+                    
+                }
+
+                //console.log( "/articles?_limit=16&_sort=published_at:ASC" + param);
+
+
+                axios
+                .get(SERVER_URL + "/articles?_limit=16&_sort=published_at:DESC" + param)
+                .then(response => {
+                    // Handle success.
+                    //console.log("subscribe article response arrived.");
+                    //console.log(response.data);
+                    
+                    dispatch(getSubscribeRecentArticleSuccess(response.data));
+                    
+                })
+                .catch(error => {
+                    // Handle error.
+                    //console.log('subscribe An error occurred:', error.response);
+                    
+                });
+
+            }         
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('category An error occurred:', error.response);
+            
+        });
+    }
+}
+
+export function getSubscribePopularArticle(userId){
+    return dispatch => {
+
+        axios
+        .get(SERVER_URL + "/subscribe-categories?_where[0][user_id]=" + userId)
+        .then(response => {
+            // Handle success.
+            //console.log("Subscribe Categories responsive arrived:")
+            //console.log(response.data);
+            const categories = response.data;
+            let n = categories ? categories.length : 0;
+            let param = "";
+            
+            if (n > 0) {
+                let n1 = Math.floor(parseInt(16/parseInt(n)));
+                //console.log("step1 : " +  n1);
+
+                let n2 = 16 - n1 * n;
+                //console.log("step2: " + n2);
+                
+                /*for (let i = 0; i < n; i++){
+                    if (i == 0) {
+                        param = param + "?article_category_in=" + categories[i].category_id;
+                    } else {
+                        param = param + "&article_category_in=" + categories[i].category_id;
+                    }
+                    
+                }*/
+
+                for (let i = 0; i < n; i++){
+                    if (i == 0) {
+                        param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
+                    } else {
+                        param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
+                    }
+                    
+                }
+
+                //console.log( "/articles?_limit=16&_sort=published_at:ASC" + param);
+
+
+                axios
+                .get(SERVER_URL + "/articles?_limit=16&_sort=likes:ASC" + param)
+                .then(response => {
+                    // Handle success.
+                    //console.log("subscribe article response arrived.");
+                    //console.log(response.data);
+                    
+                    dispatch(getSubscribePopularArticleSuccess(response.data));
+                    
+                })
+                .catch(error => {
+                    // Handle error.
+                    //console.log('subscribe An error occurred:', error.response);
+                    
+                });
+
+            }         
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('category An error occurred:', error.response);
+            
+        });
+    }
+}
+
+export function getLinkPreview1(url){
+    return dispatch => {
+
+        console.log("url : " + url);
+        
+        getLinkPreview('https://www.lennyletter.com/story/nineteen-metaphors-for-your-depressio')
+        .then((data) => console.log(data));
     }
 }

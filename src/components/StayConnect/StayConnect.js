@@ -1,7 +1,8 @@
-import { support } from 'jquery'
 import React from 'react'
 import CategoryModal from "../CategoryModal/CategoryModal";
-
+import {connect} from "react-redux";
+import {subModalShow} from "../../actions/articles";
+import {subModalHide} from "../../actions/articles";
 
 class StayConnect extends React.Component {
 
@@ -23,7 +24,7 @@ class StayConnect extends React.Component {
                                     <div class="stay-connected-inner">
                                         <h2>Stay connected <br/>
                                             Have stories sent to your inbox</h2>
-                                        <a onClick={() => this.setState({modalShow: true})}>SUBSCRIBE NOW</a>
+                                        <a onClick={() => this.props.dispatch(subModalShow())} >SUBSCRIBE NOW</a>
                                     </div>
                                 </div>
                             </div>
@@ -31,13 +32,20 @@ class StayConnect extends React.Component {
                     </section>
 
                     <CategoryModal
-                        show={this.state.modalShow}
-                        onHide={() => this.setState({modalShow: false})}
+                        show={this.props.subModalShow}
+                        onHide={() => this.props.dispatch(subModalHide())}
                     />
             </div>
         );
     }  
 }
 
-export default StayConnect
+function mapStateToProps(state) {
+    const {auth} = state;
+    const {subModalShow} = state.articles;
+
+    return { auth, subModalShow }
+}
+
+export default connect(mapStateToProps)(StayConnect)
   

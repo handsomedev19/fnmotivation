@@ -12,6 +12,10 @@ import { POST_COMMENT_REPLY_SUCCESS } from "../actions/articles";
 import { POST_COMMENT_REPLY_FAILURE } from "../actions/articles";
 import { GET_COMMENTS_SUCCESS } from "../actions/articles";
 import { GET_RELATED_ARTICLES_SUCCESS } from "../actions/articles";
+import { SUBSCRIBE_MODAL_SHOW } from "../actions/articles";
+import { SUBSCRIBE_MODAL_HIDE } from "../actions/articles";
+import { GET_SUBSCRIBE_RECENT_ARTICLE_SUCCESS } from "../actions/articles";
+import { GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS } from "../actions/articles";
 
 
 const initialState = {
@@ -24,7 +28,10 @@ const initialState = {
     oneArticle: {},
     comments: {},
     commentReplies: {},
-    relatedArticles: null
+    relatedArticles: null,
+    subModalShow: false,
+    subscribeRecentStories: null,
+    subscribePopularStories: null
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -110,6 +117,30 @@ export default function articles (state = initialState, action = {}) {
             return {
                 ...state,
                 oneArticle: action.payload
+            }
+
+        case SUBSCRIBE_MODAL_SHOW:
+            return {
+                ...state,
+                subModalShow: true
+            }
+
+        case SUBSCRIBE_MODAL_HIDE:
+            return {
+                ...state,
+                subModalShow: false
+            }
+
+        case GET_SUBSCRIBE_RECENT_ARTICLE_SUCCESS:
+            return {
+                ...state,
+                subscribeRecentStories: action.payload
+            }
+
+        case GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS:
+            return {
+                ...state,
+                subscribePopularStories: action.payload
             }
 
 

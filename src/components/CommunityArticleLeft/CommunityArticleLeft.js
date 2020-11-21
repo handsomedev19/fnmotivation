@@ -15,9 +15,8 @@ import auth from '../../reducers/auth';
 import {subModalShow} from "../../actions/articles";
 import {subModalHide} from "../../actions/articles";
 import { getSubscribeRecentArticle } from "../../actions/articles";
-import { getSubscribePopularArticle } from "../../actions/articles";
 
-class ArticleLeft extends React.Component {
+class CommunityArticleLeft extends React.Component {
 
     constructor (props) {
         super(props);
@@ -29,8 +28,7 @@ class ArticleLeft extends React.Component {
   componentDidMount() {
     this.props.dispatch(getCategories());
     this.props.dispatch(getArticles());
-    this.props.dispatch(getSubscribeRecentArticle(this.props.auth.id));
-    this.props.dispatch(getSubscribePopularArticle(this.props.auth.id));
+    this.props.dispatch(getSubscribeRecentArticle(this.props.auth.id));    
   }
 
   handleChange(event) {
@@ -82,7 +80,7 @@ class ArticleLeft extends React.Component {
                                         <Tab.Pane eventKey="recent">
                                             <div className="related-articles"> 
                                                 <Row>
-                                                    { this.props.subscribeRecentStories && this.props.subscribeRecentStories.map(function(story, index){
+                                                    { this.props.communityRecentStories && this.props.communityRecentStories.map(function(story, index){
                                                        const {article_author} = story;
                                                        const {article_category} = story;
                     
@@ -94,7 +92,7 @@ class ArticleLeft extends React.Component {
                                                                         <div className="related-articles-box">
                                                                             <div className="image-holder">
                                                                                 
-                                                                                    <img src={story.thumb ? SERVER_URL + story.thumb.url : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
+                                                                                    <img src={story.thumb ? SERVER_URL + "/uploads/" + story.thumb.name : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
                                                                                 
                                                                             </div>
                                                                             <div className="text-box">
@@ -112,7 +110,7 @@ class ArticleLeft extends React.Component {
                                                                     <a onClick={() => that.props.dispatch(subModalShow())}>
                                                                         <div className="related-articles-box">
                                                                             <div className="image-holder">                                                
-                                                                                <img src={story.thumb ? SERVER_URL + story.thumb.url : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
+                                                                                <img src={story.thumb ? SERVER_URL + "/uploads/" + story.thumb.name : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
                                                                             </div>
                                                                             <div className="text-box">
                                                                             <h4>{story.title && story.title}</h4>
@@ -160,7 +158,7 @@ class ArticleLeft extends React.Component {
                                         <Tab.Pane eventKey="popular">
                                         <div className="related-articles"> 
                                                 <Row>
-                                                    { this.props.subscribePopularStories && this.props.subscribePopularStories.map(function(story, index){
+                                                    { this.props.communityPopularStories && this.props.communityPopularStories.map(function(story, index){
 
                                                         const {article_author} = story;
                                                         const {article_category} = story;
@@ -172,7 +170,7 @@ class ArticleLeft extends React.Component {
                                                                         <div className="related-articles-box">
                                                                             <div className="image-holder">
                                                                                 
-                                                                                    <img src={story.thumb ? SERVER_URL + story.thumb.url : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
+                                                                                    <img src={story.thumb ? SERVER_URL + "/uploads/" + story.thumb.name : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
                                                                                 
                                                                             </div>
                                                                             <div className="text-box">
@@ -190,7 +188,7 @@ class ArticleLeft extends React.Component {
                                                                     <a href="#" data-toggle="modal" data-target="#exampleModal">
                                                                         <div className="related-articles-box">
                                                                             <div className="image-holder">                                                
-                                                                                <img src={story.thumb ? SERVER_URL + story.thumb.url : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
+                                                                                <img src={story.thumb ? SERVER_URL + "/uploads/" + story.thumb.name : SERVER_URL + "/uploads/" + article_category.thumb} alt={article_category.thumb}  fluid/>
                                                                             </div>
                                                                             <div className="text-box">
                                                                             <h4>{story.title && story.title}</h4>
@@ -222,11 +220,11 @@ class ArticleLeft extends React.Component {
   }
 }
 
-ArticleLeft.contextType = {
+CommunityArticleLeft.contextType = {
     store: PropTypes.object.isRequired
 }
 
-ArticleLeft.propTypes = {
+CommunityArticleLeft.propTypes = {
     dispatch: PropTypes.func.isRequired
 }
 
@@ -237,8 +235,6 @@ function mapStateToProps(state){
     const { communityPopularStories } = state.articles;
     const { auth } = state;
     const { subShowModal } = state.articles;
-    const { subscribeRecentStories } = state.articles;
-    const { subscribePopularStories } = state.articles;
 
     return { 
         categories: categories,
@@ -246,9 +242,7 @@ function mapStateToProps(state){
         communityRecentStories: communityRecentStories,
         communityPopularStories: communityPopularStories, 
         auth: auth,
-        subShowModal,
-        subscribeRecentStories,
-        subscribePopularStories
+        subShowModal
     };
 }
-export default connect(mapStateToProps)(ArticleLeft)
+export default connect(mapStateToProps)(CommunityArticleLeft)

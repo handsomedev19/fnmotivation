@@ -2,6 +2,7 @@ import React from 'react'
 import {Container, Row, Collapse} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
+import axios from "axios";
 import PropTypes from "prop-types";
 import {getOneArticle} from "../../actions/articles";
 import ArticleLeftRight from "../../components/ArticleLeftRight/ArticleLeftRight";
@@ -17,6 +18,7 @@ import { postCommentReply } from "../../actions/articles";
 import { getComments } from "../../actions/articles";
 import { getRelatedArticles } from "../../actions/articles";
 import { postThumbUp } from "../../actions/articles";
+import { checkThumbUp } from "../../actions/articles";
 import { DEFAULT_USER_AVATAR, AVATAR_URL, ARTICLE_THUMB_URL, ARTICLE_CATEGORY_THUMB_URL } from "../../utils/apiUtils";
 
 class ArticleContainer extends React.Component {
@@ -134,7 +136,38 @@ class ArticleContainer extends React.Component {
         let likes = this.props.oneArticle.likes;
         if (likes == null) {likes = 0;}
 
-        this.props.dispatch(postThumbUp(articleId, likes));
+        let flag = false;
+        let userId1 = parseInt(user.id);
+        let articleId1 = parseInt(articleId);
+        
+        axios
+        .get(SERVER_URL + "/article-likes?_where[0][article_id]=" + articleId1 + "&_where[1][user_id]=" + userId1)
+        .then(response => {
+            // Handle success.
+            console.log("Article Like Response:");
+            console.log(response.data);
+
+            if (response.data.length > 0) {
+                flag = true;
+            } else {
+                flag = false;
+            }
+
+            console.log(flag);
+
+            if (!flag && user.id != author.id) {
+                this.props.dispatch(postThumbUp(articleId, likes, user.id));
+            } else {
+                //this.props.dispatch(alert("You have already recommended it!"));
+            }
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('Article Like Response, An error occurred:', error.response);
+            flag = false;
+        });
+
+        
     }
 
 
@@ -145,6 +178,8 @@ class ArticleContainer extends React.Component {
         let author = article.article_author; if (author == null) {author = {};}
         let comments = this.props.comments; if(comments == null) {comments = {};}
         let relatedArticles = this.props.relatedArticles; if (relatedArticles == null) {relatedArticles = {};}
+
+        let url = window.location.href;
 
         //console.log("article container render:");
         //console.log(article);
@@ -188,7 +223,11 @@ class ArticleContainer extends React.Component {
                                             </div>
                                             <div className="article-title-right">
                                                 <ul>
-                                                    <li><a href=""><img src={ShareIcon} className="simple-state" alt=""/> <img src={ShareHoverIcon} className="hover-state" alt=""/></a></li>
+                                                    <li><a href={"https://www.facebook.com/sharer/sharer.php?u=" + url}>
+                                                            <img src={ShareIcon} className="simple-state" alt=""/> 
+                                                            <img src={ShareHoverIcon} className="hover-state" alt=""/>
+                                                        </a>
+                                                    </li>
                                                     <li className="active">
                                                         <a href="" onClick={this.handleThumbUpClick}>
                                                             <strong>{article.likes}</strong>
@@ -196,7 +235,12 @@ class ArticleContainer extends React.Component {
                                                             <img src={ThumbUpHoverIcon} className="hover-state" alt=""/>
                                                         </a>
                                                     </li>
-                                                    <li><a href=""><img src={BookMarkIcon} className="simple-state" alt=""/><img src={BookMarkHoverIcon} className="hover-state" alt=""/></a></li>
+                                                    <li>
+                                                        <a href="">
+                                                            <img src={BookMarkIcon} className="simple-state" alt=""/>
+                                                            <img src={BookMarkHoverIcon} className="hover-state" alt=""/>
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -331,7 +375,7 @@ class ArticleContainer extends React.Component {
                                 </div>
                                 <div className="related-articles">
                                     <h3>Related Articles</h3>  
-                                    <div className="row">
+                                    <Row>
                                         {
                                             relatedArticles.length > 0 && relatedArticles.map(function(article, index){
                                                 return (
@@ -373,7 +417,7 @@ class ArticleContainer extends React.Component {
                                                 </div>
                                             </a>
                                         </div> */}                                        
-                                    </div> 
+                                    </Row> 
                                 </div>           
                             </div>
                         </div>
