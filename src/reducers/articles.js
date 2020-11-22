@@ -1,4 +1,4 @@
-import { GET_CATEGORIES_SUCCESS, POST_COMMENT_SUCCESS, POST_THUMB_UP_SUCCESS } from "../actions/articles";
+import { GET_CATEGORIES_SUCCESS, GET_CATEGORY_SUCCESS, POST_COMMENT_SUCCESS, POST_THUMB_UP_SUCCESS } from "../actions/articles";
 import { GET_ARTICLES_SUCCESS } from "../actions/articles";
 import { POST_STORY_SUCCESS } from "../actions/articles";
 import { POST_STORY_FAILURE } from "../actions/articles";
@@ -42,7 +42,8 @@ const initialState = {
         description: null,
         isLinked: false
     },
-    subscribeItems: {}
+    subscribeItems: {},
+    category: {}
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -183,6 +184,12 @@ export default function articles (state = initialState, action = {}) {
                 ...state,
                 subscribeItems: action.payload
             }
+
+        case GET_CATEGORY_SUCCESS:
+                return {
+                    ...state,
+                    category: action.payload
+                }
 
 
         default :

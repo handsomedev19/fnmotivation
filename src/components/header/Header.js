@@ -102,7 +102,7 @@ class Header extends Component {
                                                   <li>
                                                       <div className="use-profile"> 
                                                           <div className="text-box">
-                                                              <a href="/#login"> <h3>Login</h3></a>
+                                                              <a href="/login"> <h3>Login</h3></a>
                                                           </div>
 
                                                       </div>

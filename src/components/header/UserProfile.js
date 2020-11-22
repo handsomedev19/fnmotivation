@@ -39,7 +39,7 @@ const UserProfile = ({ auth, handleLogout }) => {
           <i className="fa fa-sign-out" style={{ marginRight: "0.5em" }} />          
         </NavDropdown.Item>
         <NavDropdown.Divider />
-        <NavDropdown.Item href="#action/3.4">Profile</NavDropdown.Item>
+        <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
       </NavDropdown>
   );
 };

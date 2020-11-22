@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { getArticles } from "../../actions/articles";
+import {Link} from "react-router-dom";
 
 class ArticleLeftRight extends React.Component {
 
@@ -20,7 +21,7 @@ class ArticleLeftRight extends React.Component {
                         <div className="article-stories">
                             <div className="title">
                                 <h3>NEWS STORIES</h3>
-                                <a href="#">View all</a>
+                                <a href="/">View all</a>
                             </div>
                             { this.props.articles && this.props.articles.map(
                                 function(article){
@@ -30,7 +31,7 @@ class ArticleLeftRight extends React.Component {
                                             <h3>{article.title}</h3>
                                             <h4>{article.outer_url}</h4>
                                             <p>{article.intro} </p>
-                                            <a href="/storyPage">Read more</a>
+                                            <Link to={`/articles/${article.id}`}>Read more</Link>
                                         </div>
                                     );
                                 }                      

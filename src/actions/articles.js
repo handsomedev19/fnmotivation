@@ -36,6 +36,7 @@ export const GET_LINK_PREVIEW_SUCCESS = "get_link_article_success";
 export const GET_LINK_PREVIEW_FAILURE = "get_link_article_failure";
 export const POST_NEWS_ARTICLE_SUCCESS = "post_news_article_success";
 export const POST_NEWS_ARTICLE_FAILURE = "post_news_article_failure";
+export const GET_CATEGORY_SUCCESS = "get_category_success";
 
 
 function getCategoriesSuccess(payload){
@@ -233,6 +234,13 @@ function postNewsArticleSuccess(payload){
 function postNewsArticleFailure(){
     return {
         type: POST_NEWS_ARTICLE_FAILURE
+    }
+}
+
+function getCategorySuccess(payload){
+    return {
+        type: GET_CATEGORY_SUCCESS,
+        payload
     }
 }
 
@@ -838,6 +846,23 @@ export function getSubscribeItems(userId){
             // Handle error.
             //console.log('An error occurred:', error.response);
             dispatch(alert("Some errors found"));
+        });
+    }
+}
+
+export function getCategory(categoryId){
+    return dispatch => {
+        axios
+        .get(SERVER_URL + "/article-categories/" + categoryId)
+        .then(response => {
+            // Handle success.
+            //console.log(response.data);     
+            dispatch(getCategorySuccess(response.data));
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+            
         });
     }
 }

@@ -16,6 +16,7 @@ import {subModalShow} from "../../actions/articles";
 import {subModalHide} from "../../actions/articles";
 import { getSubscribeRecentArticle } from "../../actions/articles";
 import { getSubscribePopularArticle } from "../../actions/articles";
+import { withRouter } from "react-router";
 
 class ArticleLeft extends React.Component {
 
@@ -39,7 +40,7 @@ class ArticleLeft extends React.Component {
     //console.log(value);
 
     if (value != "0") {
-        this.props.dispatch(getCommunityStories(value));
+        this.props.history.push(`/categories/${value}`);
     } 
 
   }
@@ -90,7 +91,7 @@ class ArticleLeft extends React.Component {
                                                        if (IsAuthenticated) {
                                                             return (
                                                                 <Col xl={3} lg={4} md={4} sm={6} xs={6} >
-                                                                    <Link to={`/articles/${story.id}`} activeClassName="active">
+                                                                    <Link to={`/articles/${story.id}`} activeclassname="active">
                                                                         <div className="related-articles-box">
                                                                             <div className="image-holder">
                                                                                 
@@ -251,4 +252,4 @@ function mapStateToProps(state){
         subscribePopularStories
     };
 }
-export default connect(mapStateToProps)(ArticleLeft)
+export default connect(mapStateToProps)(withRouter(ArticleLeft))

@@ -260,16 +260,16 @@ class ArticleContainer extends React.Component {
                                         {
                                             article.outer && !!article.outer_image &&
                                             <>
-                                            <img src={SERVER_URL + "/uploads/" + article.outer_image} alt="Article Image" className="img-fluid" />
+                                            <a href={article.outer_url}><img src={article.outer_image} alt="Article Image" className="img-fluid" /></a>
                                             <p>{article.body}</p>
-                                            <a href="">{article.outer_url}</a>
+                                            <a href={article.outer_url}>{article.outer_url}</a>
                                             </>
                                         }
                                         {
                                             article.outer && !!article.outer_image &&
                                             <>                                            
                                             <p>{article.body}</p>
-                                            <a href="">{article.outer_url}</a>
+                                            <a href={article.outer_url}>{article.outer_url}</a>
                                             </>
                                         }
                                         
@@ -379,7 +379,7 @@ class ArticleContainer extends React.Component {
                                         {
                                             relatedArticles.length > 0 && relatedArticles.map(function(article, index){
                                                 return (
-                                                    <div className={"col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6" + index > 1 ? "d-none d-sm-block" : "" }>
+                                                    <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6">
                                                         <Link to={`/articles/${article.id}`} activeclassname="active">
                                                             <div className="related-articles-box">
                                                                 <div className="image-holder">

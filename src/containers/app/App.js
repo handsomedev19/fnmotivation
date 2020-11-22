@@ -7,7 +7,6 @@ import PropTypes from "prop-types";
 // Please change to BrowserRouter if you have your own backend server.
 ///////////////////////////////////////////////////////////////////////////
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-
 import { connect } from "react-redux";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
@@ -20,6 +19,8 @@ import PostStoryContainer from "../poststory/PostStoryContainer"
 import CommunitiesContainer from "../communities/CommunitiesContainer"
 import SignupContainer from "../signup/SignupContainer"
 import ArticleContainer from "../article/ArticleContainer";
+import CommunitiesArticleContainer from "../communitiesArticle/CommunitiesArticleContainer";
+import ProfileContainer from "../profile/ProfileContainer";
 
 import { logout } from "../../actions/auth";
 import auth from "../../reducers/auth";
@@ -54,6 +55,8 @@ class App extends Component {
                 <Route path="/login" component={Login} />
                 <Route path="/signup" component={SignupContainer} />
                 <Route path="/articles/:articleId" component={ArticleContainer}/>
+                <Route path="/categories/:categoryId" component={CommunitiesArticleContainer}/>
+                <Route exact path="/profile" component={ProfileContainer} />
                 <PrivateRoute
                   path="/post-story"
                   isAuthenticated={isAuthenticated}
