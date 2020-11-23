@@ -1,11 +1,20 @@
 import React from "react";
-
+import {connect} from "react-redux";
+import {getUser} from "../../actions/auth";
+ 
 class ProfileContainer extends React.Component {
     constructor(props){
         super(props);
     }
 
+    componentDidMount(){
+        const userId = this.props.auth.id;
+        this.props.dispatch(getUser(userId));
+    }
+
     render(){
+        const user = this.props.userInfo;
+
         return(
             <section className="profile-sec">
                 <div className="container-fluid">
@@ -17,11 +26,11 @@ class ProfileContainer extends React.Component {
                                 </div>
                                 <div className="profile-right">
                                     <div className="text-box">
-                                        <h3>Aamir Mustafa</h3>
-                                        <h4>aamir91@gmail.com</h4>
+                                        <h3>{user.fullname}</h3>
+                                        <h4>{user.email}</h4>
                                         <ul>
-                                            <li><a className="edit-btn" href="#">Edit</a></li>
-                                            <li><a href="#">Reports</a></li>
+                                            <li><a className="edit-btn" href="">Edit</a></li>
+                                            <li><a href="">Reports</a></li>
                                         </ul>
                                     </div> 
                                 </div>
@@ -254,4 +263,13 @@ class ProfileContainer extends React.Component {
         );
     }
 }
-export default ProfileContainer;
+function mapStateToProps(state){
+    const {auth} = state || {};
+    const {userInfo} = state.auth || {};
+    
+    return {
+        auth,
+        userInfo
+    }
+}
+export default connect(mapStateToProps)(ProfileContainer);

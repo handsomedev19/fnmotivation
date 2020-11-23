@@ -24,6 +24,8 @@ export const LOGOUT_REQUEST = "LOGOUT_REQUEST";
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const LOGOUT_FAILURE = "LOGOUT_FAILURE";
 
+export const GET_USER_SUCCESS = "GET_USER_SUCCESS";
+
 function loginRequest(user) {
   return {
     type: LOGIN_REQUEST,
@@ -180,4 +182,28 @@ export function signup(username, fullname, email, gender, birthday, password){
 
     });
   }
+}
+
+function getUserSuccess(payload){
+  return{
+    type: GET_USER_SUCCESS,
+    payload
+  }
+}
+
+export function getUser(userId){
+  return dispatch => {
+    axios
+    .get(SERVER_URL + "/users/" + userId)
+    .then(response => {
+        // Handle success.
+        //console.log(response.data);     
+        dispatch(getUserSuccess(response.data));
+    })
+    .catch(error => {
+        // Handle error.
+        //console.log('An error occurred:', error.response);
+        
+    });
+}
 }

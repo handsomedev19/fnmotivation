@@ -4,7 +4,8 @@ import {
   LOGIN_FAILURE,
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
-  LOGOUT_FAILURE
+  LOGOUT_FAILURE,
+  GET_USER_SUCCESS
 } from "../actions/auth";
 
 import { loadUserProfile, loadIdToken, loadIdUser, loadIdId, loadIdAvatar } from "../utils/apiUtils";
@@ -18,7 +19,8 @@ const initialState = {
   loginError: null,
   token: loadIdToken(),
   id: loadIdId(),
-  avatar: loadIdAvatar()
+  avatar: loadIdAvatar(),
+  userInfo: {}
 };
 
 function initializeState() {
@@ -69,6 +71,13 @@ export default function auth(state = initializeState(), action = {}) {
         loggingOut: false,
         logoutError: action.error
       };
+
+    case GET_USER_SUCCESS:
+      return {
+        ...state,
+        userInfo: action.payload
+      }
+      
     default:
       return state;
   }
