@@ -1,6 +1,7 @@
 import axios from "axios";
 import { SERVER_URL } from "../utils/apiUtils"
 import { alert } from "../actions/alerts"
+import { data } from "jquery";
 
 export const GET_CATEGORIES_SUCCESS = "get_categories_success";
 export const GET_CATEGORIES_FAILURE = "get_categories_failure";
@@ -8,7 +9,7 @@ export const GET_ARTICLES_SUCCESS = "get_articles_success";
 export const GET_ARTICLES_FAILURE = "get_articles_failure";
 export const POST_STORY_SUCCESS = "post_article_success";
 export const POST_STORY_FAILURE = "post_article_failure";
-export const GET_ARTICLE_TAGS = "get_article_tags";
+export const GET_ARTICLE_TAGS_SUCCESS = "get_article_tags_success";
 export const SET_ARTICLE_TAGS = "set_article_tags";
 export const GET_COMMUNITY_RECENT_STORIES_SUCCESS = "get_community_recent_stories_success";
 export const GET_COMMUNITY_POPULAR_STORIES_SUCCESS = "get_community_popular_stories_success";
@@ -37,6 +38,10 @@ export const GET_LINK_PREVIEW_FAILURE = "get_link_article_failure";
 export const POST_NEWS_ARTICLE_SUCCESS = "post_news_article_success";
 export const POST_NEWS_ARTICLE_FAILURE = "post_news_article_failure";
 export const GET_CATEGORY_SUCCESS = "get_category_success";
+export const GET_USER_ARTICLES_SUCCESS = "GET_USER_ARTICLES_SUCCESS";
+export const GET_USER_STORIES_SUCCESS = "GET_USER_STORIES_SUCCESS";
+export const GET_USER_FOLLOWERS_SUCCESS = "GET_USER_FOLLOWERS_SUCCESS";
+export const GET_USER_FOLLOWINGS_SUCCESS = "GET_USER_FOLLOWINGS_SUCCESS";
 
 
 function getCategoriesSuccess(payload){
@@ -244,6 +249,34 @@ function getCategorySuccess(payload){
     }
 }
 
+function getUserStoriesSuccess(payload){
+    return{
+        type: GET_USER_STORIES_SUCCESS,
+        payload
+    }
+}
+
+function getUserArticlesSuccess(payload){
+    return {
+        type: GET_USER_ARTICLES_SUCCESS,
+        payload
+    }
+}
+
+function getUserFollowersSuccess(payload){
+    return {
+        type: GET_USER_FOLLOWERS_SUCCESS,
+        payload
+    }
+}
+
+function getUserFollowingsSuccess(payload){
+    return {
+        type: GET_USER_FOLLOWINGS_SUCCESS,
+        payload
+    }
+}
+
 export function getCategories() {
 
     return dispatch => {
@@ -324,11 +357,12 @@ export function getCommunityStories(id){
 
 }
 
-export function postStory(formData) {
+export function postStory(formData, data1) {
     return dispatch => {
 
        
         console.log("post story here");
+        console.log(data1);
 
         axios
             .post(SERVER_URL  + "/articles", formData)
@@ -336,9 +370,28 @@ export function postStory(formData) {
                 //handle success
                 console.log("Post Success");
                 console.log(response.data);
+                
+                data1.article_id = parseInt(response.data.id);
+                console.log(data1.article_id);
 
-                //dispatch(postArticleSuccess());
-                dispatch(alert("Post Story Success!"));
+                if (data1.article_tags.length > 0){
+                    axios
+                        .post(SERVER_URL  + "/article-tags-multiple", data1)
+                        .then( response => {
+                            //handle success
+                            console.log("Post ArticleTags Success");
+                            console.log(response.data);
+  
+                            dispatch(alert("Post Story Success!"));                    
+                        })
+                        .catch( error => {
+                            //handle error
+                            console.log('An error occurred:', error.response);
+                            dispatch(alert("Post Story Failed!"));
+                        });
+                } else {
+                    dispatch(alert("Post Story Success!"));
+                }               
 
             })
             .catch( error => {
@@ -358,9 +411,10 @@ export function setTags(payload){
     }
 }
 
-export function getTags() {
+export function getTagsSuccess(payload) {
     return {
-        type: GET_ARTICLE_TAGS
+        type: GET_ARTICLE_TAGS_SUCCESS,
+        payload
     }
 }
 
@@ -640,8 +694,8 @@ export function getSubscribeRecentArticle(userId){
         .get(SERVER_URL + "/subscribe-categories?_where[0][user_id]=" + userId)
         .then(response => {
             // Handle success.
-            //console.log("Subscribe Categories responsive arrived:")
-            //console.log(response.data);
+            console.log("Subscribe Categories responsive arrived:")
+            console.log(response.data);
             const categories = response.data;
             let n = categories ? categories.length : 0;
             let param = "";
@@ -863,6 +917,59 @@ export function getCategory(categoryId){
             // Handle error.
             //console.log('An error occurred:', error.response);
             
+        });
+    }
+}
+
+export function getUserStories(userId){
+    return dispatch => {
+        axios
+        .get(SERVER_URL + "/articles?_where[0][outer]=false&_where[1][article_author]=" + userId)
+        .then(response => {
+            // Handle success.
+            //console.log(response.data);     
+            dispatch(getUserStoriesSuccess(response.data));
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+            
+        });
+    }
+}
+
+export function getUserArticles(userId){
+    return dispatch => {
+        axios
+        .get(SERVER_URL + "/articles?_where[0][outer]=true&_where[1][article_author]=" + userId)
+        .then(response => {
+            // Handle success.
+            //console.log(response.data);     
+            dispatch(getUserArticlesSuccess(response.data));
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+            
+        });
+    }
+}
+
+export function getTags(article_id){
+    console.log("get tags" + article_id);
+    console.log(SERVER_URL + "/article-tags?_where[0][article_id]=" + article_id);
+    return dispatch => {
+        axios
+        .get(SERVER_URL + "/article-tags?_where[0][article_id]=" + article_id)
+        .then(response => {
+            // Handle success.
+            console.log("get tags success:");
+            console.log(response.data);     
+            dispatch(getTagsSuccess(response.data));
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('get tags An error occurred:', error.response);   
         });
     }
 }

@@ -18,7 +18,10 @@ import { postCommentReply } from "../../actions/articles";
 import { getComments } from "../../actions/articles";
 import { getRelatedArticles } from "../../actions/articles";
 import { postThumbUp } from "../../actions/articles";
-import { checkThumbUp } from "../../actions/articles";
+import { 
+    checkThumbUp,
+    getTags
+} from "../../actions/articles";
 import { DEFAULT_USER_AVATAR, AVATAR_URL, ARTICLE_THUMB_URL, ARTICLE_CATEGORY_THUMB_URL } from "../../utils/apiUtils";
 
 class ArticleContainer extends React.Component {
@@ -48,6 +51,7 @@ class ArticleContainer extends React.Component {
 
         this.props.dispatch(getOneArticle(articleId));
         this.props.dispatch(getComments(articleId));
+        this.props.dispatch(getTags(articleId));
         
     }
 
@@ -55,6 +59,7 @@ class ArticleContainer extends React.Component {
         if(prevProps.match.params.articleId !== this.props.match.params.articleId){
             this.props.dispatch(getOneArticle(this.props.match.params.articleId));
             this.props.dispatch(getComments(this.props.match.params.articleId));
+            this.props.dispatch(getTags(this.props.match.params.articleId));
         }
       }
 
@@ -438,12 +443,14 @@ function mapStateToProps(state){
     const {auth} = state;
     const {comments} = state.articles;
     const {relatedArticles} = state.articles;
+    const {tags} = state.articles;
     
     return { 
         oneArticle,
         auth,
         comments,
-        relatedArticles
+        relatedArticles,
+        tags
      };
 }
 export default connect(mapStateToProps)(ArticleContainer)

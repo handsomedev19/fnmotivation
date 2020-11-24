@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { getCategories } from "../../actions/articles";
 import { postStory } from "../../actions/articles";
 import TagsInput from "../../components/TagsInput/TagsInput";
-import { getTags } from "../../actions/articles";
 
 class PostStoryContainer extends React.Component {  
 
@@ -121,7 +120,7 @@ class PostStoryContainer extends React.Component {
 
         if (tempArticle.title && tempArticle.article_category != "0" && tempArticle.intro && tempArticle.body){
 
-            this.props.dispatch(postStory(formData));
+            this.props.dispatch(postStory(formData, data1));
             this.setState({tempSubmitted: false});
             this.setState({isImgaeSelected: false});
         }

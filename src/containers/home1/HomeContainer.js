@@ -37,8 +37,6 @@ class HomeContainer extends React.Component {
               <section className="article-sec">
                 <Container fluid>
                     <Row>
-                        <h1>My skype name is live:.cid.486305bdbd4ed781</h1>
-                        <h2>Please call me</h2>
                         <Col xl={9} lg={8} md={12}>
                             <ArticleLeft/>                            
                         </Col>

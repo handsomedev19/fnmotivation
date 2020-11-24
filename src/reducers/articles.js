@@ -2,7 +2,7 @@ import { GET_CATEGORIES_SUCCESS, GET_CATEGORY_SUCCESS, POST_COMMENT_SUCCESS, POS
 import { GET_ARTICLES_SUCCESS } from "../actions/articles";
 import { POST_STORY_SUCCESS } from "../actions/articles";
 import { POST_STORY_FAILURE } from "../actions/articles";
-import { GET_ARTICLE_TAGS } from  "../actions/articles";
+import { GET_ARTICLE_TAGS_SUCCESS } from  "../actions/articles";
 import { SET_ARTICLE_TAGS } from "../actions/articles";
 import { GET_COMMUNITY_RECENT_STORIES_SUCCESS } from "../actions/articles";
 import { GET_COMMUNITY_POPULAR_STORIES_SUCCESS } from "../actions/articles";
@@ -19,13 +19,20 @@ import { GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS } from "../actions/articles";
 import { GET_LINK_PREVIEW_SUCCESS } from "../actions/articles";
 import { GET_LINK_PREVIEW_FAILURE } from "../actions/articles";
 import { POST_NEWS_ARTICLE_SUCCESS } from "../actions/articles";
-import { GET_SUBSCRIBE_ITEMS_SUCCESS} from "../actions/articles";
+import { 
+    GET_SUBSCRIBE_ITEMS_SUCCESS,
+    GET_USER_STORIES_SUCCESS,
+    GET_USER_ARTICLES_SUCCESS,
+    GET_USER_FLLOWERS_SUCCESS,
+    GET_USER_FOLLOWINGS_SUCCESS
+
+} from "../actions/articles";
 
 const initialState = {
     categories: null,
     articles: null,
     meessage: null,
-    tags: [],
+    tags: {},
     communityRecentStories: null,
     communityPopularStories: null,
     oneArticle: {},
@@ -43,7 +50,9 @@ const initialState = {
         isLinked: false
     },
     subscribeItems: {},
-    category: {}
+    category: {},
+    userStories: {},
+    userArticles: {}
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -70,11 +79,6 @@ export default function articles (state = initialState, action = {}) {
             return {
                 ...state,
                 meessage : "Your Submition was failed"
-            }
-
-        case GET_ARTICLE_TAGS:
-            return {
-                state
             }
         
         case  SET_ARTICLE_TAGS:
@@ -186,10 +190,28 @@ export default function articles (state = initialState, action = {}) {
             }
 
         case GET_CATEGORY_SUCCESS:
-                return {
+            return {
                     ...state,
                     category: action.payload
                 }
+        
+        case GET_USER_STORIES_SUCCESS:
+            return {
+                ...state,
+                userStories: action.payload
+            }
+
+        case GET_USER_ARTICLES_SUCCESS:
+                return {
+                    ...state,
+                    userArticles: action.payload
+                }
+
+        case GET_ARTICLE_TAGS_SUCCESS:
+            return {
+                ...state,
+                tags: action.payload
+            }
 
 
         default :
