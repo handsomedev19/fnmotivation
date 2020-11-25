@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {getUser} from "../../actions/auth";
-import {getUserStories, getUserArticles} from "../../actions/articles";
+import {getUserStories, getUserArticles, getUserBookmark, getUserFollower, getUserFollowing} from "../../actions/articles";
 import searchIcon from '../../images/search-icon.svg';
 import doubleArrowIcon from "../../images/double-arrow.svg";
  
@@ -15,7 +15,9 @@ class ProfileContainer extends React.Component {
         this.props.dispatch(getUser(userId));
         this.props.dispatch(getUserStories(userId));
         this.props.dispatch(getUserArticles(userId));
-
+        this.props.dispatch(getUserBookmark(userId));
+        this.props.dispatch(getUserFollower(userId));
+        this.props.dispatch(getUserFollowing(userId));
     }
 
     render(){
@@ -53,13 +55,13 @@ class ProfileContainer extends React.Component {
                                             <a className="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false"><span>{this.props.userArticles.length}</span> Articles</a>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false"><span>5</span> Favorites</a>
+                                            <a className="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false"><span>{this.props.userBookmarks.length}</span> Favorites</a>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" id="pills-Followers-tab" data-toggle="pill" href="#pills-Followers" role="tab" aria-controls="pills-Followers" aria-selected="false"><span>20</span> Followers</a>
+                                            <a className="nav-link" id="pills-Followers-tab" data-toggle="pill" href="#pills-Followers" role="tab" aria-controls="pills-Followers" aria-selected="false"><span>{this.props.followers.length}</span> Followers</a>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" id="pills-Following-tab" data-toggle="pill" href="#pills-Following" role="tab" aria-controls="pills-Following" aria-selected="false"><span>20</span> Following</a>
+                                            <a className="nav-link" id="pills-Following-tab" data-toggle="pill" href="#pills-Following" role="tab" aria-controls="pills-Following" aria-selected="false"><span>{this.props.followings.length}</span> Followings</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -84,7 +86,7 @@ class ProfileContainer extends React.Component {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        { userStories.length && userStories.map(function(story){
+                                                        { userStories.length && userStories.slice(0, 10).map(function(story){
                                                             return (
                                                                 <tr>
                                                                     <td><p>{story.title}</p></td>
@@ -151,65 +153,76 @@ class ProfileContainer extends React.Component {
                                             <div className="table-responsive">
                                                 <table> 
                                                     <tbody>
-                                                        <tr>
-                                                             <td><p>Former model on childhood trauma, eating disorder...</p></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td>
-                                                                <ul style={{justifyContent: "flex-end"}}> 
-                                                                    <li><a className="delet-btn" href="#">Delete</a></li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                             <td><p>Former model on childhood trauma, eating disorder...</p></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td>
-                                                                <ul style={{justifyContent: "flex-end"}}> 
-                                                                    <li><a className="delet-btn" href="#">Delete</a></li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                             <td><p>Former model on childhood trauma, eating disorder...</p></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td>
-                                                                <ul style={{justifyContent: "flex-end"}}>  
-                                                                    <li><a className="delet-btn" href="#">Delete</a></li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><p>Former model on childhood trauma, eating disorder...</p></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td>
-                                                                <ul style={{justifyContent: "flex-end"}}> 
-                                                                    <li><a className="delet-btn" href="#">Delete</a></li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                             <td><p>Former model on childhood trauma, eating disorder...</p></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td>
-                                                                <ul style={{justifyContent: "flex-end"}}> 
-                                                                    <li><a className="delet-btn" href="#">Delete</a></li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
+                                                        {this.props.userBookmarks.length > 0 && this.props.userBookmarks.map(function(article){
+                                                            return (
+                                                                <tr>
+                                                                    <td><p>{article.title}</p></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td>
+                                                                        <ul style={{justifyContent: "flex-end"}}> 
+                                                                            <li><a className="delet-btn" href="#">Delete</a></li>
+                                                                        </ul>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}                                                    
+                                                       
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="tab-pane fade" id="pills-Followers" role="tabpanel" aria-labelledby="pills-Followers-tab">
-                                        
+                                        <div className="profile-posts-inner"> 
+                                            <div className="table-responsive">
+                                                <table> 
+                                                    <tbody>
+                                                        {this.props.followers.length > 0 && this.props.followers.map(function(user){
+                                                            return (
+                                                                <tr>
+                                                                    <td><p></p></td>
+                                                                    <td><p>{user.username}</p></td>
+                                                                    <td></td>
+                                                                    <td>
+                                                                        <ul style={{justifyContent: "flex-end"}}> 
+                                                                            <li><a className="delet-btn" href="#">Delete</a></li>
+                                                                        </ul>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}                                                    
+                                                       
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="tab-pane fade" id="pills-Following" role="tabpanel" aria-labelledby="pills-Following-tab">...</div>
+                                    <div className="tab-pane fade" id="pills-Following" role="tabpanel" aria-labelledby="pills-Following-tab">
+                                        <div className="profile-posts-inner"> 
+                                            <div className="table-responsive">
+                                                <table> 
+                                                    <tbody>
+                                                        {this.props.followings.length > 0 && this.props.followings.map(function(user){
+                                                            return (
+                                                                <tr>
+                                                                    <td><p></p></td>
+                                                                    <td><p>{user.username}</p></td>
+                                                                    <td></td>
+                                                                    <td>
+                                                                        <ul style={{justifyContent: "flex-end"}}> 
+                                                                            <li><a className="delet-btn" href="#">Delete</a></li>
+                                                                        </ul>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}                                                    
+                                                       
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>  
                             </div>
                         </div>
@@ -224,12 +237,18 @@ function mapStateToProps(state){
     const {userInfo} = state.auth || {};
     const {userStories} = state.articles || {};
     const {userArticles} = state.articles || {};
+    const {userBookmarks} = state.articles || {};
+    const {followers} = state.articles || {};
+    const {followings} = state.articles || {};
     
     return {
         auth,
         userInfo,
         userStories,
-        userArticles
+        userArticles,
+        userBookmarks,
+        followers,
+        followings
     }
 }
 export default connect(mapStateToProps)(ProfileContainer);

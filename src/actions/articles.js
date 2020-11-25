@@ -42,6 +42,11 @@ export const GET_USER_ARTICLES_SUCCESS = "GET_USER_ARTICLES_SUCCESS";
 export const GET_USER_STORIES_SUCCESS = "GET_USER_STORIES_SUCCESS";
 export const GET_USER_FOLLOWERS_SUCCESS = "GET_USER_FOLLOWERS_SUCCESS";
 export const GET_USER_FOLLOWINGS_SUCCESS = "GET_USER_FOLLOWINGS_SUCCESS";
+export const POST_USER_FOLLOW_SUCCESS = "POST_USER_FOLLOW_SUCCESS";
+export const POST_USER_BOOKMARK_SUCESS = "POST_USER_BOOKMARK_SUCCESS";
+export const GET_USER_BOOKMARK_SUCCESS = "GET_USER_BOOKMARK_SUCCESS";
+export const ADD_SUBSCRIBE_ITEM_SUCCESS = "ADD_SUBSCRIBE_ITEM";
+export const REMOVE_SUBSCRIBE_ITEM_SUCCESS = "REMOVE_SUBSCRIBE_ITEM";
 
 
 function getCategoriesSuccess(payload){
@@ -273,6 +278,39 @@ function getUserFollowersSuccess(payload){
 function getUserFollowingsSuccess(payload){
     return {
         type: GET_USER_FOLLOWINGS_SUCCESS,
+        payload
+    }
+}
+
+function postUserFollowSuccess(){
+    return {
+        type: POST_USER_FOLLOW_SUCCESS
+    }
+}
+
+function postUserBookmarkSuccess(){
+    return {
+        type: POST_USER_BOOKMARK_SUCESS
+    }
+}
+
+function getUserBookmarkSuccess(payload){
+    return {
+        type: GET_USER_BOOKMARK_SUCCESS,
+        payload
+    }
+}
+
+export function addSubscribeItem(payload){
+    return {
+        type: ADD_SUBSCRIBE_ITEM_SUCCESS,
+        payload
+    }
+}
+
+export function removeSubscribeItem(payload){
+    return {
+        type: REMOVE_SUBSCRIBE_ITEM_SUCCESS,
         payload
     }
 }
@@ -670,19 +708,13 @@ export function subscribe(userId, categoryIds){
                 // Handle success.
                 console.log("Post Comment Success!");
                 console.log(response.data);
-    
-                //dispatch(postArticleSuccess());
+
                 dispatch(alert("Comment created was posted successfully."));
-                //dispatch(postCommentSuccess(response.data));
-                
             })
             .catch(error => {
                 // Handle error.
                 //console.log('An error occurred:', error.response);
-          
-                //dispatch(loginFailure(error));
                 dispatch(alert("Post Failed, Please Try Again"));
-        
             });
     }
 }
@@ -701,20 +733,6 @@ export function getSubscribeRecentArticle(userId){
             let param = "";
             
             if (n > 0) {
-                let n1 = Math.floor(parseInt(16/parseInt(n)));
-                //console.log("step1 : " +  n1);
-
-                let n2 = 16 - n1 * n;
-                //console.log("step2: " + n2);
-                
-                /*for (let i = 0; i < n; i++){
-                    if (i == 0) {
-                        param = param + "?article_category_in=" + categories[i].category_id;
-                    } else {
-                        param = param + "&article_category_in=" + categories[i].category_id;
-                    }
-                    
-                }*/
 
                 for (let i = 0; i < n; i++){
                     if (i == 0) {
@@ -725,7 +743,7 @@ export function getSubscribeRecentArticle(userId){
                     
                 }
 
-                //console.log( "/articles?_limit=16&_sort=published_at:ASC" + param);
+                console.log( "/articles?_limit=16&_sort=published_at:ASC" + param);
 
 
                 axios
@@ -744,7 +762,23 @@ export function getSubscribeRecentArticle(userId){
                     
                 });
 
-            }         
+            }  else {
+                axios
+                    .get(SERVER_URL + "/articles?_limit=16&_sort=published_at:DESC")
+                    .then(response => {
+                        // Handle success.
+                        //console.log("subscribe article response arrived.");
+                        //console.log(response.data);
+                        
+                        dispatch(getSubscribeRecentArticleSuccess(response.data));
+                        
+                    })
+                    .catch(error => {
+                        // Handle error.
+                        //console.log('subscribe An error occurred:', error.response);
+                        
+                    });
+            }       
         })
         .catch(error => {
             // Handle error.
@@ -768,21 +802,7 @@ export function getSubscribePopularArticle(userId){
             let param = "";
             
             if (n > 0) {
-                let n1 = Math.floor(parseInt(16/parseInt(n)));
-                //console.log("step1 : " +  n1);
-
-                let n2 = 16 - n1 * n;
-                //console.log("step2: " + n2);
-                
-                /*for (let i = 0; i < n; i++){
-                    if (i == 0) {
-                        param = param + "?article_category_in=" + categories[i].category_id;
-                    } else {
-                        param = param + "&article_category_in=" + categories[i].category_id;
-                    }
-                    
-                }*/
-
+              
                 for (let i = 0; i < n; i++){
                     if (i == 0) {
                         param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
@@ -811,7 +831,23 @@ export function getSubscribePopularArticle(userId){
                     
                 });
 
-            }         
+            }   else {
+                axios
+                    .get(SERVER_URL + "/articles?_limit=16&_sort=likes:ASC")
+                    .then(response => {
+                        // Handle success.
+                        //console.log("subscribe article response arrived.");
+                        //console.log(response.data);
+                        
+                        dispatch(getSubscribePopularArticleSuccess(response.data));
+                        
+                    })
+                    .catch(error => {
+                        // Handle error.
+                        //console.log('subscribe An error occurred:', error.response);
+                        
+                    });
+            }      
         })
         .catch(error => {
             // Handle error.
@@ -894,7 +930,17 @@ export function getSubscribeItems(userId){
             // Handle success.
             console.log("get Subscribe Items:");
             console.log(response.data);
-            dispatch(getSubscribeItemsSuccess(response.data));          
+
+            let subscribeItems = [];
+            let items = [];
+            items = response.data;
+            let n = items.length;
+            for(let i = 0; i < n; i++){
+                let item = items[i];
+                subscribeItems.push(parseInt(item.category_id));
+            }   
+
+            dispatch(getSubscribeItemsSuccess(subscribeItems));          
         })
         .catch(error => {
             // Handle error.
@@ -970,6 +1016,102 @@ export function getTags(article_id){
         .catch(error => {
             // Handle error.
             console.log('get tags An error occurred:', error.response);   
+        });
+    }
+}
+
+export function postUserBookmark(config){
+    return dispatch => {
+        console.log(config);
+
+        axios                
+        .post(SERVER_URL + '/article-bookmarks', config)
+        .then(response => {
+            // Handle success.
+            console.log("Post Bookmark Success!");
+            console.log(response.data);
+            
+            dispatch(alert("Submitted successfully."));      
+            
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('Post Bookmark, An error occurred:', error.response);
+      
+            dispatch(alert("Submit Failed, Please Try Again"));         
+        });
+    }
+}
+
+export function getUserBookmark(userId){
+    return dispatch => {
+        axios
+        .get(SERVER_URL + "/article-bookmarks-custom/" + userId)
+        .then(response => {
+            // Handle success.
+            //console.log(response.data);     
+            dispatch(getUserBookmarkSuccess(response.data));
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+            
+        });
+    }
+}
+
+export function postUserFollow(config){
+    return dispatch => {
+        console.log(config);
+
+        axios                
+        .post(SERVER_URL + '/user-follows', config)
+        .then(response => {
+            // Handle success.
+            console.log("Post User Follow Success!");
+            console.log(response.data);
+            
+            dispatch(alert("Submitted successfully."));
+           
+            
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('Post Bookmark, An error occurred:', error.response);
+      
+            dispatch(alert("Submit Failed, Please Try Again"));         
+        });
+    }
+}
+
+export function getUserFollower(userId){
+    return dispatch => {
+        axios
+        .get(SERVER_URL + "/user-follows-followers/" + userId)
+        .then(response => {
+            // Handle success.
+            //console.log(response.data);     
+            dispatch(getUserFollowersSuccess(response.data));
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+        });
+    }
+}
+
+export function getUserFollowing(userId){
+    return dispatch => {
+        axios
+        .get(SERVER_URL + "/user-follows-followings/" + userId)
+        .then(response => {
+            // Handle success.
+            //console.log(response.data);     
+            dispatch(getUserFollowingsSuccess(response.data));
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
         });
     }
 }

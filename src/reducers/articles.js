@@ -1,4 +1,4 @@
-import { GET_CATEGORIES_SUCCESS, GET_CATEGORY_SUCCESS, POST_COMMENT_SUCCESS, POST_THUMB_UP_SUCCESS } from "../actions/articles";
+import { GET_CATEGORIES_SUCCESS, GET_CATEGORY_SUCCESS, GET_USER_BOOKMARK_SUCCESS, POST_COMMENT_SUCCESS, POST_THUMB_UP_SUCCESS } from "../actions/articles";
 import { GET_ARTICLES_SUCCESS } from "../actions/articles";
 import { POST_STORY_SUCCESS } from "../actions/articles";
 import { POST_STORY_FAILURE } from "../actions/articles";
@@ -23,9 +23,10 @@ import {
     GET_SUBSCRIBE_ITEMS_SUCCESS,
     GET_USER_STORIES_SUCCESS,
     GET_USER_ARTICLES_SUCCESS,
-    GET_USER_FLLOWERS_SUCCESS,
-    GET_USER_FOLLOWINGS_SUCCESS
-
+    GET_USER_FOLLOWERS_SUCCESS,
+    GET_USER_FOLLOWINGS_SUCCESS,
+    ADD_SUBSCRIBE_ITEM_SUCCESS,
+    REMOVE_SUBSCRIBE_ITEM_SUCCESS
 } from "../actions/articles";
 
 const initialState = {
@@ -49,10 +50,13 @@ const initialState = {
         description: null,
         isLinked: false
     },
-    subscribeItems: {},
+    subscribeItems: [],
     category: {},
     userStories: {},
-    userArticles: {}
+    userArticles: {},
+    userBookmarks: {},
+    followers: [],
+    followings: []
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -211,6 +215,35 @@ export default function articles (state = initialState, action = {}) {
             return {
                 ...state,
                 tags: action.payload
+            }
+        case GET_USER_BOOKMARK_SUCCESS:
+            return {
+                ...state,
+                userBookmarks: action.payload
+            }
+
+        case GET_USER_FOLLOWERS_SUCCESS:
+            return {
+                ...state,
+                followers: action.payload
+            }
+        
+        case GET_USER_FOLLOWINGS_SUCCESS:
+            return {
+                ...state,
+                followings: action.payload
+            }
+        
+        case ADD_SUBSCRIBE_ITEM_SUCCESS:
+            return {
+                ...state,
+                subscribeItems: [...state.subscribeItems, parseInt(action.payload)]
+            }
+
+        case REMOVE_SUBSCRIBE_ITEM_SUCCESS:
+            return {
+                ...state,
+                subscribeItems: state.subscribeItems.filter((subscribeItem) => subscribeItem != action.payload)
             }
 
 

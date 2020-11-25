@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import axios from "axios";
 import PropTypes from "prop-types";
-import {getOneArticle} from "../../actions/articles";
+import {getOneArticle, postUserFollow} from "../../actions/articles";
 import ArticleLeftRight from "../../components/ArticleLeftRight/ArticleLeftRight";
 import ShareIcon from "../../images/share-icon.svg";
 import ShareHoverIcon from "../../images/share-hover.svg";
@@ -20,7 +20,8 @@ import { getRelatedArticles } from "../../actions/articles";
 import { postThumbUp } from "../../actions/articles";
 import { 
     checkThumbUp,
-    getTags
+    getTags,
+    postUserBookmark
 } from "../../actions/articles";
 import { DEFAULT_USER_AVATAR, AVATAR_URL, ARTICLE_THUMB_URL, ARTICLE_CATEGORY_THUMB_URL } from "../../utils/apiUtils";
 
@@ -42,6 +43,8 @@ class ArticleContainer extends React.Component {
         this.handleReplyChange = this.handleReplyChange.bind(this);
         this.handleReplySubmit = this.handleReplySubmit.bind(this);
         this.handleThumbUpClick = this.handleThumbUpClick.bind(this);
+        this.handleBookmarkClick = this.handleBookmarkClick.bind(this);
+        this.handleFollowClick = this.handleFollowClick.bind(this);
     }
     //this.props.match.params.articleId
 
@@ -175,6 +178,26 @@ class ArticleContainer extends React.Component {
         
     }
 
+    handleBookmarkClick(event){
+        event.preventDefault();
+        const config = {
+            user_id: this.props.auth.id,
+            article_id: this.props.oneArticle.id
+        }
+
+        this.props.dispatch(postUserBookmark(config));
+    }
+
+    handleFollowClick(event){
+        event.preventDefault();
+
+        const config = {
+            from_customer_id: this.props.auth.id,
+            to_customer_id: this.props.oneArticle.article_author.id
+        }
+
+        this.props.dispatch(postUserFollow(config));
+    }
 
     render(){
         let user = this.props.auth; if(user == null) { user = {}; }       
@@ -222,7 +245,7 @@ class ArticleContainer extends React.Component {
                                                     </div>
                                                     <div className="text-inner">
                                                         <h3>{author.username}</h3>
-                                                        <h4>Follow</h4>
+                                                        <a onClick={this.handleFollowClick}><h4>Follow</h4></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -241,7 +264,7 @@ class ArticleContainer extends React.Component {
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a href="">
+                                                        <a href="" onClick={this.handleBookmarkClick}>
                                                             <img src={BookMarkIcon} className="simple-state" alt=""/>
                                                             <img src={BookMarkHoverIcon} className="hover-state" alt=""/>
                                                         </a>

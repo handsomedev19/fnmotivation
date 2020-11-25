@@ -21,6 +21,7 @@ import SignupContainer from "../signup/SignupContainer"
 import ArticleContainer from "../article/ArticleContainer";
 import CommunitiesArticleContainer from "../communitiesArticle/CommunitiesArticleContainer";
 import ProfileContainer from "../profile/ProfileContainer";
+import Contact from "../contact/Contact";
 
 import { logout } from "../../actions/auth";
 import auth from "../../reducers/auth";
@@ -57,6 +58,7 @@ class App extends Component {
                 <Route path="/articles/:articleId" component={ArticleContainer}/>
                 <Route path="/categories/:categoryId" component={CommunitiesArticleContainer}/>
                 <Route exact path="/profile" component={ProfileContainer} />
+                <Route exact path="/contact" component={Contact} />
                 <PrivateRoute
                   path="/post-story"
                   isAuthenticated={isAuthenticated}

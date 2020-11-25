@@ -25,6 +25,7 @@ export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const LOGOUT_FAILURE = "LOGOUT_FAILURE";
 
 export const GET_USER_SUCCESS = "GET_USER_SUCCESS";
+export const POST_CONTACT_SUCCESS = "POST_CONTACT_SUCCESS";
 
 function loginRequest(user) {
   return {
@@ -206,4 +207,35 @@ export function getUser(userId){
         
     });
 }
+}
+
+function postContactSuccess(){
+  return {
+    type: POST_CONTACT_SUCCESS
+  }
+}
+
+export function postContact(config){
+  return dispatch => {
+
+    //console.log(config);
+    axios                
+    .post(SERVER_URL + '/contact-uses', config)
+    .then(response => {
+        // Handle success.
+        //console.log('Post Contact Success');
+        //console.log('User profile', response.data);
+        
+        //dispatch(postContactSuccess());
+        dispatch(alert("Post Message Success."));
+        
+    })
+    .catch(error => {
+        // Handle error.
+        //console.log('An error occurred:', error.response);
+  
+        dispatch(alert("Submit Failed, Please Try Again"));
+
+    });
+  }
 }

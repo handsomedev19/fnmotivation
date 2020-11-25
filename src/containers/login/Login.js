@@ -53,8 +53,8 @@ class Login extends Component {
 
     this.setState({ submitted: true });
     const { user } = this.state;
-    console.log(user.identifier);
-    console.log(user.password);
+    //console.log(user.identifier);
+    //console.log(user.password);
 
     this.props.dispatch(login(user.identifier, user.password));
     // user.identifier = "";
@@ -136,4 +136,4 @@ function mapStateToProps(state) {
   return { user: null };
 }
 
-export default connect(mapStateToProps)(Login);
+  export default connect(mapStateToProps)(Login);
