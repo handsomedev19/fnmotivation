@@ -169,6 +169,11 @@ export function signup(username, fullname, email, gender, birthday, password){
         console.log('User token', response.data.jwt);
         //alert("Signup Success");
 
+        let config = {
+          user_from_id: response.data.user.id,
+          username: response.data.user.username
+        }
+        postNotification(config);
         
         dispatch(loginSuccess(response.data));
         dispatch(alert("Signup Success."));
@@ -238,4 +243,19 @@ export function postContact(config){
 
     });
   }
+}
+
+export function postNotification(config){
+    //console.log(config);
+    axios                
+    .post(SERVER_URL + '/notifications-user-create', config)
+    .then(response => {
+        // Handle success.
+        //console.log('Post Contact Success');
+        //console.log('User profile', response.data);  
+    })
+    .catch(error => {
+        // Handle error.
+        //console.log('An error occurred:', error.response);
+    });
 }

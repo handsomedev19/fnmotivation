@@ -10,11 +10,13 @@ import {subModalShow} from "../../actions/articles";
 import ArticleLeftRight from "../../components/ArticleLeftRight/ArticleLeftRight";
 import StayConnect from "../../components/StayConnect/StayConnect";
 import {
-    getCategory,
-    getArticlesByCategoryId
+    getSubscribeRecentArticle1,
+    getSubscribePopularArticle1,
+    getSubscribeRecentArticle1ForVisitor,
+    getSubscribePopularArticle1ForVisitor
 } from "../../actions/articles";
 
-class CommunitiesArticleContainer extends React.Component {
+class NewStoriesContainer extends React.Component {
 
   constructor(props){
     super(props);
@@ -24,19 +26,14 @@ class CommunitiesArticleContainer extends React.Component {
   }
 
   componentDidMount(){
-    const categoryId = this.props.match.params.categoryId;
-    this.props.dispatch(getCategory(categoryId));
     this.props.dispatch(getCategories());
-    this.props.dispatch(getCommunityStories(categoryId));
-    this.props.dispatch(getArticlesByCategoryId(categoryId));
-  }
-
-  componentDidUpdate(prevProps) {
-    if(prevProps.match.params.categoryId !== this.props.match.params.categoryId){
-        this.props.dispatch(getCategory(this.props.match.params.categoryId));
-        this.props.dispatch(getCategories());
-        this.props.dispatch(getCommunityStories(this.props.match.params.categoryId));
-        this.props.dispatch(getArticlesByCategoryId(this.props.match.params.categoryId));
+    this.props.dispatch(getArticles());
+    if (this.props.auth.token != null){
+        this.props.dispatch(getSubscribeRecentArticle1(this.props.auth.id));
+        this.props.dispatch(getSubscribePopularArticle1(this.props.auth.id));
+    } else {
+        this.props.dispatch(getSubscribeRecentArticle1ForVisitor());
+        this.props.dispatch(getSubscribePopularArticle1ForVisitor());
     }
   }
 
@@ -47,7 +44,7 @@ class CommunitiesArticleContainer extends React.Component {
 
     if (value != "0") {
         //this.props.dispatch(getCommunityStories(value));
-        this.props.history.push(`/categories/${value}`);
+        this.props.history.push(`/article-categories/${value}`);
     } 
 
   }
@@ -65,7 +62,7 @@ class CommunitiesArticleContainer extends React.Component {
                         <Col xl={9} lg={8} md={12}>
                             <div className="article-left">
                                 <div className="pre-login-inner">
-                                    <h2>{this.props.category.title}</h2>
+                                    <h2>New Stories</h2>
                                     <div>
                                         <Tab.Container defaultActiveKey="recent">      
                                             <div>
@@ -92,7 +89,7 @@ class CommunitiesArticleContainer extends React.Component {
                                                         <Tab.Pane eventKey="recent">
                                                             <div className="related-articles"> 
                                                                 <Row>
-                                                                    { this.props.communityRecentStories && this.props.communityRecentStories.map(function(story, index){
+                                                                    { this.props.subscribeRecentArticles && this.props.subscribeRecentArticles.map(function(story, index){
                                                                     const {article_author} = story;
                                                                     const {article_category} = story;
                                     
@@ -142,7 +139,7 @@ class CommunitiesArticleContainer extends React.Component {
                                                         <Tab.Pane eventKey="popular">
                                                         <div className="related-articles"> 
                                                                 <Row>
-                                                                    { this.props.communityPopularStories && this.props.communityPopularStories.map(function(story, index){
+                                                                    { this.props.subscribePopularArticles && this.props.subscribePopularArticles.map(function(story, index){
 
                                                                         const {article_author} = story;
                                                                         const {article_category} = story;
@@ -215,8 +212,8 @@ class CommunitiesArticleContainer extends React.Component {
 function mapStateToProps(state){
   const { categories } = state.articles || {};
   const { articles } = state.articles || {};
-  const { communityRecentStories } = state.articles || {};
-  const { communityPopularStories } = state.articles || {};
+  const { subscribeRecentArticles } = state.articles || {};
+  const { subscribePopularArticles } = state.articles || {};
   const { auth } = state || {};
   const { subShowModal } = state.articles || {};
   const {category} = state.articles || {};
@@ -224,11 +221,11 @@ function mapStateToProps(state){
   return {
       categories,
       articles,
-      communityRecentStories,
-      communityPopularStories,
+      subscribeRecentArticles,
+      subscribePopularArticles,
       auth,
       subShowModal,
       category
   }
 }
-export default connect(mapStateToProps)(CommunitiesArticleContainer)
+export default connect(mapStateToProps)(NewStoriesContainer)

@@ -26,7 +26,13 @@ import {
     GET_USER_FOLLOWERS_SUCCESS,
     GET_USER_FOLLOWINGS_SUCCESS,
     ADD_SUBSCRIBE_ITEM_SUCCESS,
-    REMOVE_SUBSCRIBE_ITEM_SUCCESS
+    REMOVE_SUBSCRIBE_ITEM_SUCCESS,
+    GET_ARTICLES_BY_CATEGORYID_SUCCESS,
+    GET_SUBSCRIBE_RECENT_ARTICLE1_SUCCESS,
+    GET_SUBSCRIBE_POPULAR_ARTICLE1_SUCCESS,
+    GET_COMMUNITY_RECENT_ARTICLES_SUCCESS,
+    GET_COMMUNITY_POPULAR_ARTICLES_SUCCESS,
+    GET_ARTICLE_SEARCH_SUCCESS
 } from "../actions/articles";
 
 const initialState = {
@@ -36,6 +42,8 @@ const initialState = {
     tags: {},
     communityRecentStories: null,
     communityPopularStories: null,
+    communityRecentArticles: null,
+    communityPopularArticles: null,
     oneArticle: {},
     comments: {},
     commentReplies: {},
@@ -43,6 +51,8 @@ const initialState = {
     subModalShow: false,
     subscribeRecentStories: null,
     subscribePopularStories: null,
+    subscribeRecentArticles: null,
+    subscribePopularArticles: null,
     linkPreviewData: {
         title: null,
         image: null,
@@ -56,7 +66,8 @@ const initialState = {
     userArticles: {},
     userBookmarks: {},
     followers: [],
-    followings: []
+    followings: [],
+    searchResult: null
 };
 
 export default function articles (state = initialState, action = {}) {
@@ -101,6 +112,18 @@ export default function articles (state = initialState, action = {}) {
             return {
                 ...state,
                 communityPopularStories: action.payload
+            }
+
+        case GET_COMMUNITY_RECENT_ARTICLES_SUCCESS:
+            return {
+                ...state,
+                communityRecentArticles: action.payload
+            }
+        
+        case GET_COMMUNITY_POPULAR_ARTICLES_SUCCESS:
+            return {
+                ...state,
+                communityPopularArticles: action.payload
             }
         
         case GET_ONEARTICLE_SUCCESS:
@@ -162,6 +185,20 @@ export default function articles (state = initialState, action = {}) {
                 ...state,
                 subscribePopularStories: action.payload
             }
+
+        case GET_SUBSCRIBE_RECENT_ARTICLE1_SUCCESS:
+            return {
+                ...state,
+                subscribeRecentArticles: action.payload
+            }
+
+        case GET_SUBSCRIBE_POPULAR_ARTICLE1_SUCCESS:
+            return {
+                ...state,
+                subscribePopularArticles: action.payload
+            }
+
+        
 
         case GET_LINK_PREVIEW_SUCCESS:
             return {
@@ -245,6 +282,19 @@ export default function articles (state = initialState, action = {}) {
                 ...state,
                 subscribeItems: state.subscribeItems.filter((subscribeItem) => subscribeItem != action.payload)
             }
+
+        case GET_ARTICLES_BY_CATEGORYID_SUCCESS:
+            return{
+                ...state,
+                articles: action.payload
+            }
+
+        case GET_ARTICLE_SEARCH_SUCCESS:
+            return {
+                ...state,
+                searchResult: action.payload
+            }
+
 
 
         default :

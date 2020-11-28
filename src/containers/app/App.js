@@ -22,6 +22,10 @@ import ArticleContainer from "../article/ArticleContainer";
 import CommunitiesArticleContainer from "../communitiesArticle/CommunitiesArticleContainer";
 import ProfileContainer from "../profile/ProfileContainer";
 import Contact from "../contact/Contact";
+import EditStoryContainer from "../edit/EditStoryContainer";
+import NewStoriesContainer from "../newStories/NewStoriesContainer";
+import CommunitiesArticle1Container from "../communitiesArticle1/CommunitiesArticle1Container";
+import SearchContainer from "../search/SearchContainer";
 
 import { logout } from "../../actions/auth";
 import auth from "../../reducers/auth";
@@ -54,11 +58,15 @@ class App extends Component {
                 <Route exact path="/" component={HomeContainer} />
                 <Route path="/communities" component={CommunitiesContainer} />
                 <Route path="/login" component={Login} />
+                <Route exact path="/profile" component={ProfileContainer} />
+                <Route exact path="/contact" component={Contact} />
                 <Route path="/signup" component={SignupContainer} />
                 <Route path="/articles/:articleId" component={ArticleContainer}/>
                 <Route path="/categories/:categoryId" component={CommunitiesArticleContainer}/>
-                <Route exact path="/profile" component={ProfileContainer} />
-                <Route exact path="/contact" component={Contact} />
+                <Route path="/article-categories/:categoryId" component={CommunitiesArticle1Container}/>
+                <Route path="/editstory/:articleId" component={EditStoryContainer}/>
+                <Route path="/newstories" component={NewStoriesContainer}/>
+                <Route path="/search" component={SearchContainer}/>              
                 <PrivateRoute
                   path="/post-story"
                   isAuthenticated={isAuthenticated}

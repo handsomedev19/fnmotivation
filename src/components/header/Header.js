@@ -14,9 +14,28 @@ class Header extends Component {
   constructor(props){
     super(props);
     this.state = {
-        open: false
+        open: false,
+        searchValue: ""
     }
-    this.setOpen = this.setOpen.bind(this);  
+    this.setOpen = this.setOpen.bind(this);
+    this.handleSearchChnage = this.handleSearchChnage.bind(this);
+    this.handleSearchClick = this.handleSearchClick.bind(this);
+  }
+
+  handleSearchChnage(event){
+    event.preventDefault();
+    const {name, value} = event.target;
+    //console.log(value);
+    this.setState({searchValue: value}); 
+  }
+
+  handleSearchClick(event){
+      event.preventDefault();
+      const value = this.state.searchValue;
+      console.log(value);
+      if(value != ""){
+        this.props.history.push("/search?" + value);
+      }   
   }
 
   setOpen(){
@@ -67,9 +86,9 @@ class Header extends Component {
                                   </div>
 
                                   <div className="header-right">
-                                      <form>
-                                          <input type="text" className="form-control" placeholder="Search" />
-                                          <a href="#"><img src={searchIcon} alt="" /></a>
+                                      <form onSubmit={this.handleSearchClick}>
+                                          <input type="text" className="form-control" placeholder="Search" onChange={this.handleSearchChnage}/>
+                                          <a href="" ><img src={searchIcon} alt="" /></a>
                                       </form>
                                       
                                       

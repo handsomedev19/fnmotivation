@@ -16,6 +16,8 @@ import {subModalShow} from "../../actions/articles";
 import {subModalHide} from "../../actions/articles";
 import { getSubscribeRecentArticle } from "../../actions/articles";
 import { getSubscribePopularArticle } from "../../actions/articles";
+import { getSubscribeRecentArticleForVisitor } from "../../actions/articles";
+import { getSubscribePopularArticleForVisitor } from "../../actions/articles";
 import { withRouter } from "react-router";
 
 class ArticleLeft extends React.Component {
@@ -30,8 +32,13 @@ class ArticleLeft extends React.Component {
   componentDidMount() {
     this.props.dispatch(getCategories());
     this.props.dispatch(getArticles());
-    this.props.dispatch(getSubscribeRecentArticle(this.props.auth.id));
-    this.props.dispatch(getSubscribePopularArticle(this.props.auth.id));
+    if (this.props.auth.token != null){
+        this.props.dispatch(getSubscribeRecentArticle(this.props.auth.id));
+        this.props.dispatch(getSubscribePopularArticle(this.props.auth.id));
+    } else {
+        this.props.dispatch(getSubscribeRecentArticleForVisitor());
+        this.props.dispatch(getSubscribePopularArticleForVisitor());
+    }
   }
 
   handleChange(event) {

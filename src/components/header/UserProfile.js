@@ -5,7 +5,7 @@ import { DEFAULT_USER_AVATAR, AVATAR_URL, NOTIFICATION_URL } from "../../utils/a
 
 const UserProfile = ({ auth, handleLogout }) => {
 
-  console.log(auth.avatar);
+  //console.log(auth.avatar);
   
   return (
     <NavDropdown title={

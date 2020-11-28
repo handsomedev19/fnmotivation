@@ -22,7 +22,9 @@ class CategoryModal extends React.Component {
     }
 
     componentDidMount(){
-        this.props.dispatch(getSubscribeItems(this.props.auth.id));
+        if(this.props.auth.token != null){
+            this.props.dispatch(getSubscribeItems(this.props.auth.id));
+        }        
     }
 
     handleImgClick(event) {
@@ -43,9 +45,8 @@ class CategoryModal extends React.Component {
         event.preventDefault();
         console.log(this.props.auth.id);
         console.log(this.props.subscribeItems);
-        //if (this.props.subscribeItems.length > 0) {
-            this.props.dispatch(subscribe(this.props.auth.id, this.props.subscribeItems));
-        //}
+        
+        this.props.dispatch(subscribe(this.props.auth.id, this.props.subscribeItems));
         this.props.dispatch(subModalHide());
     }
 

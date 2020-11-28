@@ -9,10 +9,13 @@ export const GET_ARTICLES_SUCCESS = "get_articles_success";
 export const GET_ARTICLES_FAILURE = "get_articles_failure";
 export const POST_STORY_SUCCESS = "post_article_success";
 export const POST_STORY_FAILURE = "post_article_failure";
+export const DELETE_STORY_SUCCESS = "DELETE_STORY_SUCCESS";
 export const GET_ARTICLE_TAGS_SUCCESS = "get_article_tags_success";
 export const SET_ARTICLE_TAGS = "set_article_tags";
 export const GET_COMMUNITY_RECENT_STORIES_SUCCESS = "get_community_recent_stories_success";
 export const GET_COMMUNITY_POPULAR_STORIES_SUCCESS = "get_community_popular_stories_success";
+export const GET_COMMUNITY_RECENT_ARTICLES_SUCCESS = "get_community_recent_articles_success";
+export const GET_COMMUNITY_POPULAR_ARTICLES_SUCCESS = "get_community_popular_articles_success";
 export const GET_ONEARTICLE_SUCCESS = "get_article_success";
 export const GET_ONEARTICLE_FAILURE = "get_article_failure";
 export const POST_COMMENT_SUCCESS = "post_comment_success";
@@ -32,7 +35,9 @@ export const SUBSCRIBE_FAILURE = "subscribe_failure";
 export const GET_SUBSCRIBE_ITEMS_SUCCESS = "get_subscribe_items_success";
 export const GET_SUBSCRIBE_ITEMS_FAILURE = "get_subscribe_items_failure";
 export const GET_SUBSCRIBE_RECENT_ARTICLE_SUCCESS = "get_subscribe_recent_article_success";
-export const GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS = "get_subscribe_popular_article_success"; 
+export const GET_SUBSCRIBE_POPULAR_ARTICLE_SUCCESS = "get_subscribe_popular_article_success";
+export const GET_SUBSCRIBE_RECENT_ARTICLE1_SUCCESS = "get_subscribe_recent_article1_success";
+export const GET_SUBSCRIBE_POPULAR_ARTICLE1_SUCCESS = "get_subscribe_popular_article1_success";  
 export const GET_LINK_PREVIEW_SUCCESS = "get_link_article_success";
 export const GET_LINK_PREVIEW_FAILURE = "get_link_article_failure";
 export const POST_NEWS_ARTICLE_SUCCESS = "post_news_article_success";
@@ -47,6 +52,8 @@ export const POST_USER_BOOKMARK_SUCESS = "POST_USER_BOOKMARK_SUCCESS";
 export const GET_USER_BOOKMARK_SUCCESS = "GET_USER_BOOKMARK_SUCCESS";
 export const ADD_SUBSCRIBE_ITEM_SUCCESS = "ADD_SUBSCRIBE_ITEM";
 export const REMOVE_SUBSCRIBE_ITEM_SUCCESS = "REMOVE_SUBSCRIBE_ITEM";
+export const GET_ARTICLES_BY_CATEGORYID_SUCCESS = "GET_ARTICLES_BY_CATEGORYID_SUCCESS";
+export const GET_ARTICLE_SEARCH_SUCCESS = "GET_ARTICLE_SEARCH_RESULT_SUCCESS";
 
 
 function getCategoriesSuccess(payload){
@@ -99,6 +106,20 @@ function getCommunityRecentStoriesSuccess(payload){
 function getCommunityPopularStoriesSuccess(payload){
     return {
         type: GET_COMMUNITY_POPULAR_STORIES_SUCCESS,
+        payload: payload
+    } 
+}
+
+function getCommunityRecentArticlesSuccess(payload){
+    return {
+        type: GET_COMMUNITY_RECENT_ARTICLES_SUCCESS,
+        payload: payload
+    } 
+}
+
+function getCommunityPopularArticlesSuccess(payload){
+    return {
+        type: GET_COMMUNITY_POPULAR_ARTICLES_SUCCESS,
         payload: payload
     } 
 }
@@ -221,6 +242,20 @@ function getSubscribePopularArticleSuccess(payload){
     }
 }
 
+function getSubscribeRecentArticle1Success(payload){
+    return {
+        type: GET_SUBSCRIBE_RECENT_ARTICLE1_SUCCESS,
+        payload
+    }
+}
+
+function getSubscribePopularArticle1Success(payload){
+    return {
+        type: GET_SUBSCRIBE_POPULAR_ARTICLE1_SUCCESS,
+        payload
+    }
+}
+
 function getLinkPreviewSuccess(payload){
     return {
         type: GET_LINK_PREVIEW_SUCCESS,
@@ -301,6 +336,20 @@ function getUserBookmarkSuccess(payload){
     }
 }
 
+function getArticlesByCategoryIdSuccess(payload){
+    return {
+        type: GET_ARTICLES_BY_CATEGORYID_SUCCESS,
+            payload
+    }
+}
+
+function getArticleSearchSuccess(payload){
+    return {
+        type: GET_ARTICLE_SEARCH_SUCCESS,
+        payload
+    }
+}
+
 export function addSubscribeItem(payload){
     return {
         type: ADD_SUBSCRIBE_ITEM_SUCCESS,
@@ -342,6 +391,14 @@ export function getArticles() {
             // Handle success.
             //console.log("Articles:");
             console.log(response.data);
+            for(let i in response.data){
+                let str = response.data[i].outer_url;
+                let str1 = str.split("/");
+                let str2 = str1[2];
+                let str3 = str2.split(".");
+                let str4 = str3[1];
+                response.data[i].company = str4;
+            }
             dispatch(getArticlesSucces(response.data));          
         })
         .catch(error => {
@@ -367,7 +424,7 @@ export function getCommunityStories(id){
                 //console.log("getCommunityRecentStories response arrived");
                 //console.log(response.data); 
 
-                dispatch(getCommunityRecentStoriesSuccess(response.data));     
+                dispatch(getCommunityRecentArticlesSuccess(response.data));     
             })
             .catch(error => {
                 // Handle error.
@@ -384,7 +441,50 @@ export function getCommunityStories(id){
                 //console.log("getCommunityPopularStories response arrived");
                 //console.log(response.data); 
 
-                dispatch(getCommunityPopularStoriesSuccess(response.data));     
+                dispatch(getCommunityPopularArticlesSuccess(response.data));     
+            })
+            .catch(error => {
+                // Handle error.
+                //console.log('An error occurred:', error.response);
+                
+            });
+        }    
+
+}
+
+export function getCommunityArticles(id){
+
+    //console.log("article_category : " + id);
+    //console.log(SERVER_URL + "/articles?_limit=4&_sort=published_at:desc&_where[0][outer]=false&_where[1][article_category]=" + id);
+        
+        return dispatch => {
+            axios
+            .get(SERVER_URL + "/articles?_limit=4&_sort=published_at:desc&_where[0][outer]=true&_where[1][article_category]=" + id)
+            //.get(SERVER_URL + "/articles?_limit=30&_sort=pubilshed_at:desc&_where[0][outer]=false&_where[1][id]=" + id)
+            .then(response => {
+                // Handle success.
+                
+                //console.log("getCommunityRecentStories response arrived");
+                //console.log(response.data); 
+
+                dispatch(getCommunityRecentArticlesSuccess(response.data));     
+            })
+            .catch(error => {
+                // Handle error.
+                //console.log('An error occurred:', error.response);
+                
+            });
+
+            axios
+            .get(SERVER_URL + "/articles?_limit=4&_sort=likes:asc&_where[0][outer]=true&_where[1][article_category]=" + id)
+            //.get(SERVER_URL + "/articles?_limit=30&_sort=pubilshed_at:desc&_where[0][outer]=false&_where[1][id]=" + id)
+            .then(response => {
+                // Handle success.
+                
+                //console.log("getCommunityPopularStories response arrived");
+                //console.log(response.data); 
+
+                dispatch(getCommunityPopularArticlesSuccess(response.data));     
             })
             .catch(error => {
                 // Handle error.
@@ -438,6 +538,31 @@ export function postStory(formData, data1) {
 
                 //dispatch(postArticleFailure());
                 dispatch(alert("Post Story Failed!"));
+            });
+    }
+}
+
+export function editStory(formData, articleId) {
+    return dispatch => {
+
+        console.log("edit story here");
+
+        axios
+            .put(SERVER_URL  + "/articles/" + articleId, formData)
+            .then( response => {
+                //handle success
+                console.log("Post Success");
+                console.log(response.data);
+                                
+                dispatch(alert("Edit Story Success!"));
+              
+            })
+            .catch( error => {
+                //handle error
+                console.log('Edit story, An error occurred:', error.response);
+
+                //dispatch(postArticleFailure());
+                dispatch(alert("Edit Story Failed!"));
             });
     }
 }
@@ -695,6 +820,7 @@ export function subModalHide(){
 export function subscribe(userId, categoryIds){
     return dispatch => {
 
+        if(userId != null){
             console.log(userId);
             console.log(categoryIds);
             const config = {
@@ -716,6 +842,9 @@ export function subscribe(userId, categoryIds){
                 //console.log('An error occurred:', error.response);
                 dispatch(alert("Post Failed, Please Try Again"));
             });
+        } else {
+            dispatch(alert("Please Sign In first!"));
+        }
     }
 }
 
@@ -743,11 +872,11 @@ export function getSubscribeRecentArticle(userId){
                     
                 }
 
-                console.log( "/articles?_limit=16&_sort=published_at:ASC" + param);
+                //console.log( "/articles?_limit=16&_sort=published_at:ASC" + param);
 
 
                 axios
-                .get(SERVER_URL + "/articles?_limit=16&_sort=published_at:DESC" + param)
+                .get(SERVER_URL + "/articles?_limit=16&_sort=published_at:DESC&_where[outer]=false" + param)
                 .then(response => {
                     // Handle success.
                     //console.log("subscribe article response arrived.");
@@ -816,7 +945,7 @@ export function getSubscribePopularArticle(userId){
 
 
                 axios
-                .get(SERVER_URL + "/articles?_limit=16&_sort=likes:ASC" + param)
+                .get(SERVER_URL + "/articles?_limit=16&_sort=likes:ASC&_where[outer]=false" + param)
                 .then(response => {
                     // Handle success.
                     //console.log("subscribe article response arrived.");
@@ -854,6 +983,232 @@ export function getSubscribePopularArticle(userId){
             //console.log('category An error occurred:', error.response);
             
         });
+    }
+}
+
+export function getSubscribeRecentArticleForVisitor(){
+    return dispatch => {
+
+                axios
+                .get(SERVER_URL + "/articles?_limit=16&_sort=published_at:DESC&_where[outer]=false")
+                .then(response => {
+                    // Handle success.
+                    //console.log("subscribe article response arrived.");
+                    //console.log(response.data);
+                    
+                    dispatch(getSubscribeRecentArticleSuccess(response.data));
+                    
+                })
+                .catch(error => {
+                    // Handle error.
+                    //console.log('subscribe An error occurred:', error.response);
+                    
+                });
+          
+    }
+}
+
+export function getSubscribePopularArticleForVisitor(){
+    return dispatch => {
+
+       
+                axios
+                    .get(SERVER_URL + "/articles?_limit=16&_sort=likes:ASC")
+                    .then(response => {
+                        // Handle success.
+                        //console.log("subscribe article response arrived.");
+                        //console.log(response.data);
+                        
+                        dispatch(getSubscribePopularArticleSuccess(response.data));
+                        
+                    })
+                    .catch(error => {
+                        // Handle error.
+                        //console.log('subscribe An error occurred:', error.response);
+                        
+                    });     
+    }
+}
+
+export function getSubscribeRecentArticle1(userId){
+    return dispatch => {
+
+        axios
+        .get(SERVER_URL + "/subscribe-categories?_where[0][user_id]=" + userId)
+        .then(response => {
+            // Handle success.
+            console.log("Subscribe Categories responsive arrived:")
+            console.log(response.data);
+            const categories = response.data;
+            let n = categories ? categories.length : 0;
+            let param = "";
+            
+            if (n > 0) {
+
+                for (let i = 0; i < n; i++){
+                    if (i == 0) {
+                        param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
+                    } else {
+                        param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
+                    }
+                    
+                }
+
+                //console.log( "/articles?_limit=16&_sort=published_at:ASC" + param);
+
+
+                axios
+                .get(SERVER_URL + "/articles?_limit=16&_sort=published_at:DESC&_where[outer]=true" + param)
+                .then(response => {
+                    // Handle success.
+                    //console.log("subscribe article response arrived.");
+                    //console.log(response.data);
+                    
+                    dispatch(getSubscribeRecentArticle1Success(response.data));
+                    
+                })
+                .catch(error => {
+                    // Handle error.
+                    //console.log('subscribe An error occurred:', error.response);
+                    
+                });
+
+            }  else {
+                axios
+                    .get(SERVER_URL + "/articles?_limit=16&_sort=published_at:DESC")
+                    .then(response => {
+                        // Handle success.
+                        //console.log("subscribe article response arrived.");
+                        //console.log(response.data);
+                        
+                        dispatch(getSubscribeRecentArticle1Success(response.data));
+                        
+                    })
+                    .catch(error => {
+                        // Handle error.
+                        //console.log('subscribe An error occurred:', error.response);
+                        
+                    });
+            }       
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('category An error occurred:', error.response);
+            
+        });
+    }
+}
+
+export function getSubscribePopularArticle1(userId){
+    return dispatch => {
+
+        axios
+        .get(SERVER_URL + "/subscribe-categories?_where[0][user_id]=" + userId)
+        .then(response => {
+            // Handle success.
+            //console.log("Subscribe Categories responsive arrived:")
+            //console.log(response.data);
+            const categories = response.data;
+            let n = categories ? categories.length : 0;
+            let param = "";
+            
+            if (n > 0) {
+              
+                for (let i = 0; i < n; i++){
+                    if (i == 0) {
+                        param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
+                    } else {
+                        param = param + "&_where[_or][" + i + "][article_category]=" + categories[i].category_id;
+                    }
+                    
+                }
+
+                //console.log( "/articles?_limit=16&_sort=published_at:ASC" + param);
+
+
+                axios
+                .get(SERVER_URL + "/articles?_limit=16&_sort=likes:ASC&_where[outer]=true" + param)
+                .then(response => {
+                    // Handle success.
+                    //console.log("subscribe article response arrived.");
+                    //console.log(response.data);
+                    
+                    dispatch(getSubscribePopularArticle1Success(response.data));
+                    
+                })
+                .catch(error => {
+                    // Handle error.
+                    //console.log('subscribe An error occurred:', error.response);
+                    
+                });
+
+            }   else {
+                axios
+                    .get(SERVER_URL + "/articles?_limit=16&_sort=likes:ASC")
+                    .then(response => {
+                        // Handle success.
+                        //console.log("subscribe article response arrived.");
+                        //console.log(response.data);
+                        
+                        dispatch(getSubscribePopularArticle1Success(response.data));
+                        
+                    })
+                    .catch(error => {
+                        // Handle error.
+                        //console.log('subscribe An error occurred:', error.response);
+                        
+                    });
+            }      
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('category An error occurred:', error.response);
+            
+        });
+    }
+}
+
+export function getSubscribeRecentArticle1ForVisitor(){
+    return dispatch => {
+
+                axios
+                .get(SERVER_URL + "/articles?_limit=16&_sort=published_at:DESC&_where[outer]=true")
+                .then(response => {
+                    // Handle success.
+                    //console.log("subscribe article response arrived.");
+                    //console.log(response.data);
+                    
+                    dispatch(getSubscribeRecentArticle1Success(response.data));
+                    
+                })
+                .catch(error => {
+                    // Handle error.
+                    //console.log('subscribe An error occurred:', error.response);
+                    
+                });
+          
+    }
+}
+
+export function getSubscribePopularArticle1ForVisitor(){
+    return dispatch => {
+
+       
+                axios
+                    .get(SERVER_URL + "/articles?_limit=16&_sort=likes:ASC")
+                    .then(response => {
+                        // Handle success.
+                        //console.log("subscribe article response arrived.");
+                        //console.log(response.data);
+                        
+                        dispatch(getSubscribePopularArticle1Success(response.data));
+                        
+                    })
+                    .catch(error => {
+                        // Handle error.
+                        //console.log('subscribe An error occurred:', error.response);
+                        
+                    });     
     }
 }
 
@@ -1115,3 +1470,109 @@ export function getUserFollowing(userId){
         });
     }
 }
+
+export function getArticlesByCategoryId(categoryId){
+    return dispatch => {
+        axios
+        .get(SERVER_URL + "/articles?_limit=5&_where[0][outer]=true&_where[1][article_category]=" + categoryId)
+        .then(response => {
+            // Handle success.
+            console.log("Get Articles By CategoryId:");
+            console.log(response.data);
+            dispatch(getArticlesByCategoryIdSuccess(response.data));          
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+            dispatch(getArticlesFailure(error.response));
+        });
+    }
+}
+
+export function deleteStory(articleId){
+    return dispatch => {
+        axios
+        .delete(SERVER_URL + "/articles/" + articleId)
+        .then(response => {
+            // Handle success.
+            console.log("Get Articles By CategoryId:");
+            console.log(response.data);
+            dispatch(alert("Submitted Successfully."));          
+        })
+        .catch(error => {
+            // Handle error.
+            //console.log('An error occurred:', error.response);
+            dispatch(alert("Submitted Failed."));
+        });
+    }
+}
+
+export function deleteBookmark(config){
+    return dispatch => {
+        console.log(config);
+
+        axios                
+        .post(SERVER_URL + '/article-bookmarks-delete', config)
+        .then(response => {
+            // Handle success.
+            console.log("Success!");
+            console.log(response.data);
+
+            dispatch(alert("Submitted successfully."));          
+            
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('Delete Bookmark, An error occurred:', error.response);
+      
+            dispatch(alert("Failed, Please Try Again"));
+            
+        });
+    }
+}
+
+export function deleteFollowing(config){
+    return dispatch => {
+        console.log(config);
+
+        axios                
+        .post(SERVER_URL + '/user-follows-delete', config)
+        .then(response => {
+            // Handle success.
+            console.log("Success!");
+            console.log(response.data);
+
+            dispatch(alert("Submitted successfully."));          
+            
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('Delete Following, An error occurred:', error.response);
+      
+            dispatch(alert("Failed, Please Try Again"));
+            
+        });
+    }
+}
+
+export function getArticleSearch(config){
+    return dispatch => {
+        console.log(config);
+
+        axios                
+        .post(SERVER_URL + '/article-search-custom', config)
+        .then(response => {
+            // Handle success.
+            console.log("Post Search Success!");
+            console.log(response.data);
+            dispatch(getArticleSearchSuccess(response.data));
+        })
+        .catch(error => {
+            // Handle error.
+            console.log('Post Search, An error occurred:', error.response);
+            dispatch(alert("Search Failed, Please Try Again"));         
+        });
+    }
+}
+
+

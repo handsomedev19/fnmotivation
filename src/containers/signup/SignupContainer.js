@@ -6,6 +6,7 @@ import TwitterIcon from '../../images/twitter-icon2.svg'
 import FacebookIcon from '../../images/facebook-icon2.svg'
 import { connect } from "react-redux";
 import { signup } from "../../actions/auth";
+import {subModalShow} from "../../actions/articles";
 
 class SignupContainer extends React.Component {
 
@@ -41,6 +42,7 @@ class SignupContainer extends React.Component {
             const { from } = this.props.location.state || {
               from: { pathname: "/" }
             };
+            this.props.dispatch(subModalShow());
             nextProps.history.replace(from);
           } catch (err) {
             nextProps.history.replace("/");

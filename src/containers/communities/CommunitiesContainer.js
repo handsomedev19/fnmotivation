@@ -35,7 +35,7 @@ class CommunitiesContainer extends React.Component {
                                     
                                     </div>
                                   </Link>
-                            </Col>
+                              </Col>
                             );
                           })
                         }

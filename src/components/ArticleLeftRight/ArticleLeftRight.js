@@ -11,7 +11,7 @@ class ArticleLeftRight extends React.Component {
     }
 
     componentWillMount() {
-        this.props.dispatch(getArticles());    
+        //this.props.dispatch(getArticles());    
     }
 
     render() {
@@ -21,7 +21,7 @@ class ArticleLeftRight extends React.Component {
                         <div className="article-stories">
                             <div className="title">
                                 <h3>NEWS STORIES</h3>
-                                <a href="/">View all</a>
+                                <a href="/newstories">View all</a>
                             </div>
                             { this.props.articles && this.props.articles.map(
                                 function(article){
@@ -29,7 +29,7 @@ class ArticleLeftRight extends React.Component {
                                         <div className="article-stories-box">
                                             <span>{article.article_category && article.article_category.title}</span> 
                                             <h3>{article.title}</h3>
-                                            <h4>{article.outer_url}</h4>
+                                            <h4>{article.company}</h4>                                            
                                             <p>{article.intro} </p>
                                             <Link to={`/articles/${article.id}`}>Read more</Link>
                                         </div>
@@ -62,7 +62,7 @@ function mapStateToProps(state){
     const { articles } = state.articles;
 
     return { 
-        articles: articles
+        articles
     };
 }
 export default connect(mapStateToProps)(ArticleLeftRight)

@@ -1,13 +1,28 @@
 import React from "react";
 import {connect} from "react-redux";
 import {getUser} from "../../actions/auth";
-import {getUserStories, getUserArticles, getUserBookmark, getUserFollower, getUserFollowing} from "../../actions/articles";
+import {
+    getUserStories, 
+    getUserArticles, 
+    getUserBookmark, 
+    getUserFollower, 
+    getUserFollowing, 
+    deleteStory,
+    deleteBookmark,
+    deleteFollowing
+} from "../../actions/articles";
 import searchIcon from '../../images/search-icon.svg';
 import doubleArrowIcon from "../../images/double-arrow.svg";
+import {Link} from "react-router-dom";
+import {DEFAULT_USER_AVATAR, AVATAR_URL} from "../../utils/apiUtils";
  
 class ProfileContainer extends React.Component {
     constructor(props){
         super(props);
+
+        this.handleStoryDelete = this.handleStoryDelete.bind(this);
+        this.handleBookmarkDelete = this.handleBookmarkDelete.bind(this);
+        this.handleFollowingDelete = this.handleFollowingDelete.bind(this);
     }
 
     componentDidMount(){
@@ -20,7 +35,43 @@ class ProfileContainer extends React.Component {
         this.props.dispatch(getUserFollowing(userId));
     }
 
+    handleStoryDelete(event){
+        event.preventDefault();
+
+        //console.log(event.target.name);
+        const articleId = event.target.name;
+        this.props.dispatch(deleteStory(articleId));
+    }
+
+    handleBookmarkDelete(event){
+        event.preventDefault();
+        const userId = this.props.auth.id;
+        const articleId = event.target.name;
+        console.log(articleId);
+        const config = {
+            user_id: userId,
+            article_id: parseInt(articleId)
+        }
+
+        this.props.dispatch(deleteBookmark(config));
+    }
+
+    handleFollowingDelete(event){
+        event.preventDefault();
+        const FromCustomerId = this.props.auth.id;
+        const ToCustomerId = parseInt(event.target.name);
+        console.log(ToCustomerId);
+        const config = {
+            from_customer_id: FromCustomerId,
+            to_customer_id: ToCustomerId
+        }
+
+        this.props.dispatch(deleteFollowing(config));
+
+    }
+
     render(){
+        var that = this;
         const user = this.props.userInfo;
         let userStories = this.props.userStories; if(userStories == null){userStories = {};}
         let userArticles = this.props.userArticles; if(userArticles == null){userArticles = {};}
@@ -32,7 +83,11 @@ class ProfileContainer extends React.Component {
                         <div className="col-12">
                             <div className="profile-inner">
                                 <div className="image-holder">
-                                    <img src="images/profile-img.png" alt="" className="img-fluid" />
+                                    {
+                                        user.avatar == null ? <img src={DEFAULT_USER_AVATAR} alt="" className="img-fluid" />
+                                                    : <img src={AVATAR_URL + user.avatar} alt="" className="img-fluid" />
+                                    }
+                                    
                                 </div>
                                 <div className="profile-right">
                                     <div className="text-box">
@@ -94,8 +149,8 @@ class ProfileContainer extends React.Component {
                                                                     <td>{story.published_at}</td>
                                                                     <td>
                                                                         <ul>
-                                                                            <li><a href="#">Edit</a></li>
-                                                                            <li><a className="delet-btn" href="#">Delete</a></li>
+                                                                            <li><Link to={`/editstory/${story.id}`}>Edit</Link></li>
+                                                                            <li><a className="delet-btn" href="#" name={story.id} onClick={that.handleStoryDelete}>Delete</a></li>
                                                                         </ul>
                                                                     </td>
                                                                 </tr>
@@ -134,9 +189,8 @@ class ProfileContainer extends React.Component {
                                                                     <td>{story.article_category.title}</td>
                                                                     <td>{story.published_at}</td>
                                                                     <td>
-                                                                        <ul>
-                                                                            <li><a href="#">Edit</a></li>
-                                                                            <li><a className="delet-btn" href="#">Delete</a></li>
+                                                                        <ul>                                                                            
+                                                                            <li><a className="delet-btn" href="#" onClick={that.handleStoryDelete}>Delete</a></li>
                                                                         </ul>
                                                                     </td>
                                                                 </tr>
@@ -161,7 +215,7 @@ class ProfileContainer extends React.Component {
                                                                     <td></td>
                                                                     <td>
                                                                         <ul style={{justifyContent: "flex-end"}}> 
-                                                                            <li><a className="delet-btn" href="#">Delete</a></li>
+                                                                            <li><a className="delet-btn" href="" name={article.id} onClick={that.handleBookmarkDelete}>Delete</a></li>
                                                                         </ul>
                                                                     </td>
                                                                 </tr>
@@ -185,9 +239,7 @@ class ProfileContainer extends React.Component {
                                                                     <td><p>{user.username}</p></td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <ul style={{justifyContent: "flex-end"}}> 
-                                                                            <li><a className="delet-btn" href="#">Delete</a></li>
-                                                                        </ul>
+                                                                        
                                                                     </td>
                                                                 </tr>
                                                             );
@@ -211,7 +263,7 @@ class ProfileContainer extends React.Component {
                                                                     <td></td>
                                                                     <td>
                                                                         <ul style={{justifyContent: "flex-end"}}> 
-                                                                            <li><a className="delet-btn" href="#">Delete</a></li>
+                                                                            <li><a className="delet-btn" href="" name={user.id} onClick={that.handleFollowingDelete}>Delete</a></li>
                                                                         </ul>
                                                                     </td>
                                                                 </tr>
